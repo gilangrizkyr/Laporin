@@ -1,0 +1,31 @@
+ERROR - 2025-12-06 18:53:52 --> mysqli_sql_exception: Duplicate key name 'email' in C:\laragon\www\Laporin\system\Database\MySQLi\Connection.php:312
+Stack trace:
+#0 C:\laragon\www\Laporin\system\Database\MySQLi\Connection.php(312): mysqli->query('CREATE TABLE `u...', 0)
+#1 C:\laragon\www\Laporin\system\Database\BaseConnection.php(734): CodeIgniter\Database\MySQLi\Connection->execute('CREATE TABLE `u...')
+#2 C:\laragon\www\Laporin\system\Database\BaseConnection.php(648): CodeIgniter\Database\BaseConnection->simpleQuery('CREATE TABLE `u...')
+#3 C:\laragon\www\Laporin\system\Database\Forge.php(570): CodeIgniter\Database\BaseConnection->query('CREATE TABLE `u...')
+#4 C:\laragon\www\Laporin\app\Database\Migrations\2025-12-06-184923_CreateUsersTable.php(59): CodeIgniter\Database\Forge->createTable('users')
+#5 C:\laragon\www\Laporin\system\Database\MigrationRunner.php(867): App\Database\Migrations\CreateUsersTable->up()
+#6 C:\laragon\www\Laporin\system\Database\MigrationRunner.php(183): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\laragon\www\Laporin\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\laragon\www\Laporin\system\CLI\Commands.php(70): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\laragon\www\Laporin\system\CLI\Console.php(48): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\laragon\www\Laporin\system\Boot.php(351): CodeIgniter\CLI\Console->run()
+#11 C:\laragon\www\Laporin\system\Boot.php(104): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\laragon\www\Laporin\spark(84): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-06 19:03:41 --> mysqli_sql_exception: Duplicate entry 'superadmin' for key 'username' in C:\laragon\www\Laporin\system\Database\MySQLi\Connection.php:312
+Stack trace:
+#0 C:\laragon\www\Laporin\system\Database\MySQLi\Connection.php(312): mysqli->query('INSERT INTO `us...', 0)
+#1 C:\laragon\www\Laporin\system\Database\BaseConnection.php(734): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `us...')
+#2 C:\laragon\www\Laporin\system\Database\BaseConnection.php(648): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `us...')
+#3 C:\laragon\www\Laporin\system\Database\BaseBuilder.php(2340): CodeIgniter\Database\BaseConnection->query('INSERT INTO `us...', Array, false)
+#4 C:\laragon\www\Laporin\app\Database\Seeds\UserSeeder.php(12): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 C:\laragon\www\Laporin\system\Database\Seeder.php(147): App\Database\Seeds\UserSeeder->run()
+#6 C:\laragon\www\Laporin\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#7 C:\laragon\www\Laporin\system\CLI\Commands.php(70): CodeIgniter\Commands\Database\Seed->run(Array)
+#8 C:\laragon\www\Laporin\system\CLI\Console.php(48): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#9 C:\laragon\www\Laporin\system\Boot.php(351): CodeIgniter\CLI\Console->run()
+#10 C:\laragon\www\Laporin\system\Boot.php(104): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#11 C:\laragon\www\Laporin\spark(84): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#12 {main}
