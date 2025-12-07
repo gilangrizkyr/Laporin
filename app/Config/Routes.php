@@ -1,8 +1,8 @@
 <?php
 
-use CodeIgniter\Router\RouteCollection;
-
 namespace Config;
+
+use CodeIgniter\Router\RouteCollection;
 
 $routes = Services::routes();
 
@@ -19,14 +19,14 @@ $routes->setAutoRoute(false);
  * --------------------------------------------------------------------
  */
 
-// ========== PUBLIC ROUTES (No Auth Required) ==========
+// ========== PUBLIC ROUTES (No Auth Required) ========== //    
 
 $routes->get('/', 'Home::index', ['as' => 'home']);
 $routes->get('knowledge-base', 'Home::knowledgeBase', ['as' => 'kb']);
 $routes->get('knowledge-base/(:num)', 'Home::knowledgeBaseDetail/$1', ['as' => 'kb.detail']);
 $routes->get('knowledge-base/search', 'Home::knowledgeBaseSearch', ['as' => 'kb.search']);
 
-// ========== AUTH ROUTES ==========
+// ========== AUTH ROUTES ========== //
 
 $routes->group('auth', ['namespace' => 'App\Controllers\Auth'], function ($routes) {
     $routes->get('login', 'LoginController::index', ['as' => 'login']);
@@ -36,7 +36,7 @@ $routes->group('auth', ['namespace' => 'App\Controllers\Auth'], function ($route
     $routes->get('logout', 'LoginController::logout', ['as' => 'logout']);
 });
 
-// ========== USER ROUTES (Auth Required, Role: user) ==========
+// ========== USER ROUTES (Auth Required, Role: user) ========== //
 
 $routes->group('user', ['namespace' => 'App\Controllers\User', 'filter' => 'auth'], function ($routes) {
 
@@ -67,7 +67,7 @@ $routes->group('user', ['namespace' => 'App\Controllers\User', 'filter' => 'auth
     $routes->post('notifications/read-all', 'NotificationController::markAllAsRead', ['as' => 'user.notifications.readAll']);
 });
 
-// ========== ADMIN ROUTES (Auth Required, Role: admin|superadmin) ==========
+// ========== ADMIN ROUTES (Auth Required, Role: admin|superadmin) ========== //
 
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'role:admin,superadmin'], function ($routes) {
 
@@ -103,7 +103,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
     $routes->delete('knowledge-base/(:num)', 'KnowledgeBaseController::delete/$1', ['as' => 'admin.kb.delete']);
 });
 
-// ========== SUPERADMIN ROUTES (Auth Required, Role: superadmin only) ==========
+// ========== SUPERADMIN ROUTES (Auth Required, Role: superadmin only) ========== //
 
 $routes->group('superadmin', ['namespace' => 'App\Controllers\Superadmin', 'filter' => 'role:superadmin'], function ($routes) {
 
