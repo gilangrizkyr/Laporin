@@ -159,14 +159,14 @@
             </div>
 
             <!-- Demo Credentials -->
-            <div class="card mt-3 bg-light">
+            <!-- <div class="card mt-3 bg-light">
                 <div class="card-body">
                     <h6 class="text-center mb-3">Demo Akun:</h6>
                     <small class="d-block mb-1"><strong>Superadmin:</strong> superadmin@example.com / superadmin123</small>
                     <small class="d-block mb-1"><strong>Admin:</strong> admin@example.com / admin123</small>
                     <small class="d-block"><strong>User:</strong> user1@example.com / user123</small>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 

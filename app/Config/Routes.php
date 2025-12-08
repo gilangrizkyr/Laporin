@@ -25,6 +25,12 @@ $routes->get('/', 'Home::index', ['as' => 'home']);
 $routes->get('knowledge-base', 'Home::knowledgeBase', ['as' => 'kb']);
 $routes->get('knowledge-base/(:num)', 'Home::knowledgeBaseDetail/$1', ['as' => 'kb.detail']);
 $routes->get('knowledge-base/search', 'Home::knowledgeBaseSearch', ['as' => 'kb.search']);
+// Global Search
+$routes->get('search', 'SearchController::index', ['as' => 'search']);
+$routes->get('search/suggestions', 'SearchController::suggestions');
+$routes->get('search/history', 'SearchController::history');
+// HTML view for paginated history (requires auth)
+$routes->get('search/history/view', 'SearchController::historyPage', ['filter' => 'auth', 'as' => 'search.history.view']);
 
 // ========== AUTH ROUTES ========== //
 
@@ -89,6 +95,15 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
     // Analytics
     $routes->get('analytics', 'AnalyticsController::index', ['as' => 'admin.analytics']);
     $routes->get('analytics/export', 'AnalyticsController::export', ['as' => 'admin.analytics.export']);
+    $routes->get('analytics/export-pdf', 'AnalyticsController::exportPdf', ['as' => 'admin.analytics.exportPdf']);
+
+    // Analytics API endpoints (JSON)
+    $routes->get('analytics/api/monthly-avg/(:num)', 'AnalyticsController::apiMonthlyAvgResolution/$1');
+    $routes->get('analytics/api/monthly-avg', 'AnalyticsController::apiMonthlyAvgResolution');
+    $routes->get('analytics/api/monthly-totals/(:num)', 'AnalyticsController::apiMonthlyTotals/$1');
+    $routes->get('analytics/api/monthly-totals', 'AnalyticsController::apiMonthlyTotals');
+    $routes->get('analytics/api/by-app', 'AnalyticsController::apiComplaintsByApp');
+    $routes->get('analytics/api/admin-performance', 'AnalyticsController::apiAdminPerformance');
 
     // Export Complaints
     $routes->get('complaints/(:num)/export-pdf', 'ComplaintController::exportPdf/$1', ['as' => 'admin.complaints.pdf']);
@@ -96,11 +111,20 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
 
     // Knowledge Base Management
     $routes->get('knowledge-base', 'KnowledgeBaseController::index', ['as' => 'admin.kb']);
+    $routes->get('knowledge-base/analytics', 'KnowledgeBaseController::analytics', ['as' => 'admin.kb.analytics']);
     $routes->get('knowledge-base/create', 'KnowledgeBaseController::create', ['as' => 'admin.kb.create']);
     $routes->post('knowledge-base/store', 'KnowledgeBaseController::store', ['as' => 'admin.kb.store']);
     $routes->get('knowledge-base/(:num)/edit', 'KnowledgeBaseController::edit/$1', ['as' => 'admin.kb.edit']);
     $routes->post('knowledge-base/(:num)/update', 'KnowledgeBaseController::update/$1', ['as' => 'admin.kb.update']);
     $routes->delete('knowledge-base/(:num)', 'KnowledgeBaseController::delete/$1', ['as' => 'admin.kb.delete']);
+
+    // Notifications
+    $routes->get('notifications', 'NotificationController::index', ['as' => 'admin.notifications']);
+    $routes->get('notifications/api/count', 'NotificationController::getUnreadCount', ['as' => 'admin.notifications.count']);
+    $routes->get('notifications/api/recent', 'NotificationController::getRecent', ['as' => 'admin.notifications.recent']);
+    $routes->post('notifications/(:num)/read', 'NotificationController::markRead/$1', ['as' => 'admin.notifications.read']);
+    $routes->post('notifications/read-all', 'NotificationController::markAllRead', ['as' => 'admin.notifications.readAll']);
+    $routes->delete('notifications/(:num)', 'NotificationController::delete/$1', ['as' => 'admin.notifications.delete']);
 });
 
 // ========== SUPERADMIN ROUTES (Auth Required, Role: superadmin only) ========== //
@@ -138,4 +162,7 @@ $routes->group('superadmin', ['namespace' => 'App\Controllers\Superadmin', 'filt
     // System Analytics
     $routes->get('analytics', 'SystemAnalyticsController::index', ['as' => 'superadmin.analytics']);
     $routes->get('analytics/export', 'SystemAnalyticsController::export', ['as' => 'superadmin.analytics.export']);
+    $routes->get('analytics/export-excel', 'SystemAnalyticsController::exportExcel', ['as' => 'superadmin.analytics.exportExcel']);
+    // Priority override
+    $routes->match(['get','post'], 'complaints/(:num)/override-priority', 'PriorityController::override/$1', ['as' => 'superadmin.priority.override']);
 });

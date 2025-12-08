@@ -204,26 +204,66 @@
         </div>
         
         <div class="sidebar-menu">
-            <a href="<?= base_url('admin/dashboard') ?>" class="<?= uri_string() == 'admin/dashboard' ? 'active' : '' ?>">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="<?= base_url('admin/complaints') ?>" class="<?= strpos(uri_string(), 'admin/complaints') !== false ? 'active' : '' ?>">
-                <i class="fas fa-list"></i>
-                <span>Kelola Laporan</span>
-                <span class="badge bg-danger" id="pendingCount">0</span>
-            </a>
-            <a href="<?= base_url('admin/analytics') ?>">
-                <i class="fas fa-chart-bar"></i>
-                <span>Analytics</span>
-            </a>
-            <a href="<?= base_url('admin/knowledge-base') ?>">
-                <i class="fas fa-book"></i>
-                <span>Knowledge Base</span>
-            </a>
-            
+            <?php $role = strtolower((string) session()->get('role')); ?>
+
+            <!-- Dashboard: route depends on role -->
+            <?php if ($role === 'superadmin'): ?>
+                <a href="<?= base_url('superadmin/dashboard') ?>" class="<?= uri_string() == 'superadmin/dashboard' ? 'active' : '' ?>">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            <?php elseif ($role === 'admin'): ?>
+                <a href="<?= base_url('admin/dashboard') ?>" class="<?= uri_string() == 'admin/dashboard' ? 'active' : '' ?>">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            <?php else: ?>
+                <a href="<?= base_url('user/dashboard') ?>" class="<?= uri_string() == 'user/dashboard' ? 'active' : '' ?>">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            <?php endif; ?>
+
+            <!-- Admin area (accessible by admin + superadmin) -->
+            <?php if (in_array($role, ['admin', 'superadmin'])): ?>
+                <a href="<?= base_url('admin/complaints') ?>" class="<?= strpos(uri_string(), 'admin/complaints') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-list"></i>
+                    <span>Kelola Laporan</span>
+                    <span class="badge bg-danger" id="pendingCount">0</span>
+                </a>
+                <a href="<?= base_url('admin/analytics') ?>" class="<?= strpos(uri_string(), 'admin/analytics') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="<?= base_url('admin/knowledge-base') ?>" class="<?= strpos(uri_string(), 'admin/knowledge-base') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-book"></i>
+                    <span>Knowledge Base</span>
+                </a>
+            <?php endif; ?>
+
+            <!-- Superadmin area (only visible to superadmin) -->
+            <?php if ($role === 'superadmin'): ?>
+                <hr style="border-color: rgba(255,255,255,0.2); margin: 20px;">
+                <a href="<?= base_url('superadmin/users') ?>" class="<?= strpos(uri_string(), 'superadmin/users') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+                <a href="<?= base_url('superadmin/applications') ?>" class="<?= strpos(uri_string(), 'superadmin/applications') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-th-large"></i>
+                    <span>Applications</span>
+                </a>
+                <a href="<?= base_url('superadmin/categories') ?>" class="<?= strpos(uri_string(), 'superadmin/categories') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-tags"></i>
+                    <span>Categories</span>
+                </a>
+                <a href="<?= base_url('superadmin/analytics') ?>" class="<?= strpos(uri_string(), 'superadmin/analytics') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-chart-line"></i>
+                    <span>System Analytics</span>
+                </a>
+            <?php endif; ?>
+
             <hr style="border-color: rgba(255,255,255,0.2); margin: 20px;">
-            
+
             <a href="<?= base_url('/') ?>">
                 <i class="fas fa-globe"></i>
                 <span>Beranda</span>
@@ -239,24 +279,34 @@
     <div class="main-content">
         <!-- Topbar -->
         <div class="topbar">
-            <div>
+            <div style="display:flex; align-items:center; gap:12px;">
                 <button class="btn btn-primary mobile-menu-btn" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
                 <h5 class="d-inline-block mb-0 ms-2"><?= esc($page_title ?? 'Dashboard') ?></h5>
+
+                <form action="<?= base_url('search') ?>" method="get" class="ms-3 d-none d-md-flex" style="align-items:center">
+                    <input type="text" name="q" class="form-control form-control-sm" placeholder="Search..." style="width:300px">
+                    <button class="btn btn-sm btn-outline-secondary ms-2" type="submit"><i class="fas fa-search"></i></button>
+                </form>
             </div>
             
             <div class="topbar-user">
                 <!-- Notifications -->
                 <div class="dropdown">
-                    <a href="#" class="text-dark notification-badge" data-bs-toggle="dropdown">
+                    <a href="#" class="text-dark notification-badge" id="notifBadge" data-bs-toggle="dropdown" role="button">
                         <i class="fas fa-bell fa-lg"></i>
                         <span class="badge bg-danger" id="notifCount">0</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
+                    <ul class="dropdown-menu dropdown-menu-end" id="notifDropdown" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
                         <li><h6 class="dropdown-header">Notifikasi</h6></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-center" href="#">Lihat Semua</a></li>
+                        <li id="notifList" style="min-height: 100px;">
+                            <p class="dropdown-item-text text-muted text-center py-3">Memuat...</p>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center" href="<?= base_url('admin/notifications') ?>">Lihat Semua</a></li>
+                        <li><a class="dropdown-item text-center text-secondary" href="#" onclick="markAllAsReadNotif(event)">Tandai Semua</a></li>
                     </ul>
                 </div>
                 
@@ -326,10 +376,97 @@
             document.getElementById('sidebar').classList.toggle('show');
         }
         
+        // Load notification count and list
+        function loadNotifications() {
+            fetch('<?= base_url('admin/notifications/api/count') ?>')
+                .then(r => r.json())
+                .then(data => {
+                    const countEl = document.getElementById('notifCount');
+                    countEl.textContent = data.count || '0';
+                    if (data.count > 0) {
+                        countEl.classList.remove('d-none');
+                    } else {
+                        countEl.classList.add('d-none');
+                    }
+                });
+
+            fetch('<?= base_url('admin/notifications/api/recent') ?>?limit=5')
+                .then(r => r.json())
+                .then(data => {
+                    const listEl = document.getElementById('notifList');
+                    if (!data.notifications || data.notifications.length === 0) {
+                        listEl.innerHTML = '<p class="dropdown-item-text text-muted text-center py-3">Tidak ada notifikasi</p>';
+                        return;
+                    }
+                    listEl.innerHTML = data.notifications.map(n => `
+                        <div class="dropdown-item-text px-3 py-2 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <strong>${n.title}</strong>
+                                ${n.is_read ? '' : '<span class="badge bg-primary">Baru</span>'}
+                            </div>
+                            <small class="text-muted">${n.message || ''}</small>
+                            <div class="small text-muted mt-1">${new Date(n.created_at).toLocaleString('id-ID')}</div>
+                        </div>
+                    `).join('');
+                });
+        }
+
+        function markAllAsReadNotif(e) {
+            e.preventDefault();
+            fetch('<?= base_url('admin/notifications/read-all') ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    loadNotifications();
+                }
+            });
+        }
+
         // Load pending count
-        // TODO: Implement AJAX call
         document.getElementById('pendingCount').textContent = '0';
-        document.getElementById('notifCount').textContent = '0';
+
+        // Load notifications on page load and refresh every 30 seconds
+        loadNotifications();
+        setInterval(loadNotifications, 30000);
+    </script>
+    <script>
+        // Attach simple suggestions widget to any search input present
+        (function(){
+            const input = document.querySelector('input[name="q"]');
+            if (!input) return;
+            let timer = null;
+            const box = document.createElement('div');
+            box.className = 'list-group position-absolute';
+            box.style.zIndex = 2000;
+            box.style.width = (input.offsetWidth || 300) + 'px';
+            input.parentNode.style.position = 'relative';
+            input.parentNode.appendChild(box);
+
+            input.addEventListener('input', function(){
+                const v = this.value.trim();
+                if (timer) clearTimeout(timer);
+                if (!v) { box.innerHTML=''; return; }
+                timer = setTimeout(()=>{
+                    fetch('<?= base_url('search/suggestions') ?>?q=' + encodeURIComponent(v))
+                    .then(r=>r.json())
+                    .then(data=>{
+                        box.innerHTML = '';
+                        (data.kb||[]).slice(0,3).forEach(it=>{
+                            const a = document.createElement('a'); a.href = it.url; a.className='list-group-item list-group-item-action'; a.textContent = 'KB: ' + it.title; box.appendChild(a);
+                        });
+                        (data.complaints||[]).slice(0,3).forEach(it=>{
+                            const a = document.createElement('a'); a.href = it.url; a.className='list-group-item list-group-item-action'; a.textContent = 'CMP: ' + it.title; box.appendChild(a);
+                        });
+                        (data.users||[]).slice(0,3).forEach(it=>{
+                            const a = document.createElement('a'); a.href = it.url; a.className='list-group-item list-group-item-action'; a.textContent = 'USR: ' + it.name; box.appendChild(a);
+                        });
+                    });
+                }, 200);
+            });
+        })();
     </script>
     
     <?= $this->renderSection('scripts') ?>

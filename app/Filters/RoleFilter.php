@@ -17,15 +17,27 @@ class RoleFilter implements FilterInterface
         }
 
         // Get user role from session
-        $userRole = session()->get('role');
+        $userRole = strtolower((string) session()->get('role'));
 
         // If no arguments provided, allow all authenticated users
         if (empty($arguments)) {
             return;
         }
 
+        // Normalize arguments into array (handles cases like 'admin,superadmin')
+        if (is_string($arguments)) {
+            $args = array_filter(array_map('trim', explode(',', $arguments)));
+        } elseif (is_array($arguments)) {
+            $args = $arguments;
+        } else {
+            $args = (array) $arguments;
+        }
+
+        // Lowercase compare for robustness
+        $allowed = array_map('strtolower', $args);
+
         // Check if user role is in allowed roles
-        if (!in_array($userRole, $arguments)) {
+        if (!in_array($userRole, $allowed, true)) {
             // Redirect based on current role
             switch ($userRole) {
                 case 'superadmin':

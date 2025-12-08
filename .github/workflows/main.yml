@@ -1,0 +1,45 @@
+name: Deploy to Server via Tailscale
+
+on:
+  push:
+    branches:
+      - main  # Ganti dengan branch yang Anda inginkan
+  workflow_dispatch:  # Memungkinkan trigger manual
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy to server
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
+            -d @- \
+            ${{ secrets.DEPLOY_URL }} << EOF
+          {
+            "repository": {
+              "full_name": "${{ github.repository }}"
+            },
+            "ref": "${{ github.ref }}",
+            "pusher": {
+              "name": "${{ github.actor }}"
+            },
+            "head_commit": {
+              "message": "${{ github.event.head_commit.message }}",
+              "id": "${{ github.sha }}"
+            }
+          }
+          EOF
+          
+      - name: Check deployment status
+        run: |
+          echo "Deployment triggered successfully"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Commit Message: ${{ github.event.head_commit.message }}"
