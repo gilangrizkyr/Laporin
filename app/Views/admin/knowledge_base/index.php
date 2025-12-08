@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-between mb-4">
     <div>
         <h3>Knowledge Base</h3>
-        <p class="text-muted mb-0">Manage help articles and documentation</p>
+        <p class="text-muted mb-0">Kelola artikel bantuan dan dokumentasi</p>
     </div>
     <div class="gap-2" style="display: flex; gap: 0.5rem;">
         <a href="<?= base_url('admin/knowledge-base/analytics') ?>" class="btn btn-outline-info btn-sm">Analytics</a>
@@ -31,7 +31,7 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th style="width: 50px">#</th>
+                    <th style="width: 50px">No</th>
                     <th>Title</th>
                     <th style="width: 80px">Status</th>
                     <th style="width: 80px">Views</th>
@@ -40,9 +40,10 @@
                 </tr>
             </thead>
             <tbody>
+                <?php $no = 1; ?>
                 <?php foreach ($articles as $article): ?>
                     <tr>
-                        <td><?= $article->id ?></td>
+                        <td><?= $no++ ?></td>
                         <td><?= esc($article->title) ?></td>
                         <td>
                             <?php if ($article->is_published): ?>
@@ -73,5 +74,6 @@
         <?php endif; ?>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>

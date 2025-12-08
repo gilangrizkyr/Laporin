@@ -29,7 +29,16 @@ class PriorityController extends BaseController
             $reason = $this->request->getPost('reason');
             $old = $complaint->priority;
             $this->complaintModel->update($id, ['priority' => $newPriority]);
-            $this->historyModel->logAction($id, session()->get('user_id'), 'priority_override', $old, $newPriority, $reason);
+            $this->historyModel->logAction(
+                $id,
+                session()->get('user_id'),
+                'priority_override',
+                $old,
+                $newPriority,
+                $reason,
+                session()->get('full_name'),
+                session()->get('email')
+            );
             return redirect()->to(base_url('admin/complaints/' . $id))->with('success', 'Priority overridden');
         }
 

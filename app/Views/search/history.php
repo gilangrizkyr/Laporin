@@ -36,7 +36,9 @@
                 </thead>
                 <tbody>
                     <?php if (empty($rows)): ?>
-                        <tr><td colspan="6" class="text-center">Belum ada riwayat pencarian.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center">Belum ada riwayat pencarian.</td>
+                        </tr>
                     <?php else: ?>
                         <?php foreach ($rows as $i => $r): ?>
                             <tr>

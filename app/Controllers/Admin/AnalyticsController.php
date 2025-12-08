@@ -184,8 +184,8 @@ class AnalyticsController extends BaseController
         $output = $dompdf->output();
 
         return $this->response->setHeader('Content-Type', 'application/pdf')
-                              ->setHeader('Content-Disposition', "attachment; filename=analytics_{$year}.pdf")
-                              ->setBody($output);
+            ->setHeader('Content-Disposition', "attachment; filename=analytics_{$year}.pdf")
+            ->setBody($output);
     }
 
     public function export()
@@ -206,7 +206,7 @@ class AnalyticsController extends BaseController
         $csvLines[] = ["Analytics Export - Year: {$year}"];
         $csvLines[] = ['Month', 'Complaints'];
         foreach ($months as $num => $count) {
-            $csvLines[] = [date('F', mktime(0,0,0,$num,1,$year)), $count];
+            $csvLines[] = [date('F', mktime(0, 0, 0, $num, 1, $year)), $count];
         }
 
         $csvLines[] = [];
@@ -225,8 +225,8 @@ class AnalyticsController extends BaseController
         $csv = stream_get_contents($out);
 
         return $this->response->setHeader('Content-Type', 'text/csv')
-                              ->setHeader('Content-Disposition', "attachment; filename=analytics_{$year}.csv")
-                              ->setBody($csv);
+            ->setHeader('Content-Disposition', "attachment; filename=analytics_{$year}.csv")
+            ->setBody($csv);
     }
 
     public function exportExcel()
@@ -253,7 +253,7 @@ class AnalyticsController extends BaseController
         $sheet->setCellValue('A1', 'Month')->setCellValue('B1', 'Total');
         $row = 2;
         for ($m = 1; $m <= 12; $m++) {
-            $sheet->setCellValue('A' . $row, date('F', mktime(0,0,0,$m,1,$year)));
+            $sheet->setCellValue('A' . $row, date('F', mktime(0, 0, 0, $m, 1, $year)));
             $sheet->setCellValue('B' . $row, $months[$m]);
             $row++;
         }
@@ -283,7 +283,60 @@ class AnalyticsController extends BaseController
         $writer = new Xlsx($spreadsheet);
         $fileName = "analytics_{$year}.xlsx";
         return $this->response->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                              ->setHeader('Content-Disposition', "attachment; filename={$fileName}")
-                              ->setBody($writer->save('php://output'));
+            ->setHeader('Content-Disposition', "attachment; filename={$fileName}")
+            ->setBody($writer->save('php://output'));
+    }
+
+    /**
+     * Export analytics data and charts as PDF
+     */
+    public function exportAnalyticsPdf()
+    {
+        $year = (int) $this->request->getGet('year') ?: (int) date('Y');
+
+        // Get all analytics data
+        $byMonthRaw = $this->complaintModel->getComplaintsByMonth($year);
+        $months = array_fill(1, 12, 0);
+        foreach ($byMonthRaw as $r) {
+            $m = (int) $r['month'];
+            $months[$m] = (int) $r['total'];
+        }
+
+        $avgResolution = $this->complaintModel->getAverageResolutionTime();
+        $topApps = $this->complaintModel->getTopProblematicApps(10);
+        $stats = $this->complaintModel->getGlobalStats();
+
+        $priorityRows = $this->complaintModel->db->query("SELECT priority, COUNT(*) as total FROM complaints GROUP BY priority")->getResultArray();
+        $priorities = [
+            'normal' => 0,
+            'important' => 0,
+            'urgent' => 0,
+        ];
+        foreach ($priorityRows as $p) {
+            $priorities[$p['priority']] = (int)$p['total'];
+        }
+
+        // Generate HTML
+        $html = view('admin/analytics/export_pdf', [
+            'year' => $year,
+            'months' => $months,
+            'avgResolution' => $avgResolution,
+            'topApps' => $topApps,
+            'stats' => $stats,
+            'priorities' => $priorities,
+        ]);
+
+        // Generate PDF
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'Analytics_' . $year . '_' . date('Y-m-d') . '.pdf';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($dompdf->output());
     }
 }

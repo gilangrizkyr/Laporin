@@ -98,7 +98,6 @@
         </form>
     </div>
 </div>
-
 <!-- Complaints List -->
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -115,7 +114,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th style="width: 80px;">ID</th>
+                            <th style="width: 80px;">No</th>
                             <th>Judul</th>
                             <th>Pelapor</th>
                             <th style="width: 120px;">Prioritas</th>
@@ -126,9 +125,11 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php $no = 1; // Mulai nomor urut dari 1 
+                        ?>
                         <?php foreach ($complaints as $complaint): ?>
                             <tr>
-                                <td><strong>#<?= $complaint->id ?></strong></td>
+                                <td><strong><?= $no++ ?></strong></td>
                                 <td>
                                     <a href="<?= base_url('admin/complaints/' . $complaint->id) ?>" class="text-decoration-none fw-bold">
                                         <?= esc($complaint->title) ?>
@@ -193,5 +194,6 @@
         <?php endif; ?>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>

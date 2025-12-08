@@ -26,7 +26,9 @@
 
                     <div class="mb-3">
                         <label class="form-label">Content <span class="text-danger">*</span></label>
-                        <textarea name="content" id="content-editor" class="form-control" rows="10" required><?= esc($article->content ?? old('content')) ?></textarea>
+                        <!-- Ganti textarea dengan div Quill -->
+                        <div id="editor" style="height: 400px;"><?= esc($article->content ?? old('content')) ?></div>
+                        <input type="hidden" name="content" id="hidden-content">
                         <small class="text-muted d-block mt-1">Rich text editor - HTML formatting supported</small>
                     </div>
 
@@ -64,9 +66,7 @@
 
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="is_published" class="form-check-input" id="is_published" <?= (isset($article) && $article->is_published) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="is_published">
-                            Published
-                        </label>
+                        <label class="form-check-label" for="is_published">Published</label>
                         <small class="text-muted d-block">Unchecked = Draft</small>
                     </div>
 
@@ -89,19 +89,31 @@
         </form>
     </div>
 </div>
-
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js"></script>
+<!-- Quill JS & CSS -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+
 <script>
-    tinymce.init({
-        selector: '#content-editor',
-        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-        toolbar: 'undo redo | formatselect | bold italic underline strikethrough | link image media table | bullist numlist | blockquote codesample | emoticons wordcount',
-        height: 400,
-        menubar: 'file edit view insert format tools table help',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }'
+    // Inisialisasi Quill
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['link', 'image', 'blockquote', 'code-block'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ header: [1, 2, 3, false] }],
+                ['clean']
+            ]
+        }
     });
+
+    // Submit form: isi hidden input dengan HTML dari Quill
+    document.querySelector('form').onsubmit = function() {
+        document.getElementById('hidden-content').value = quill.root.innerHTML;
+    };
 </script>
 <?= $this->endSection() ?>

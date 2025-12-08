@@ -13,7 +13,7 @@ class RoleFilter implements FilterInterface
         // Check if user is logged in first
         if (!session()->has('user_id')) {
             return redirect()->to('/auth/login')
-                           ->with('error', 'Silakan login terlebih dahulu');
+                ->with('error', 'Silakan login terlebih dahulu');
         }
 
         // Get user role from session
@@ -42,14 +42,14 @@ class RoleFilter implements FilterInterface
             switch ($userRole) {
                 case 'superadmin':
                     return redirect()->to('/superadmin/dashboard')
-                                   ->with('error', 'Anda tidak memiliki akses ke halaman tersebut');
+                        ->with('error', 'Anda tidak memiliki akses ke halaman tersebut');
                 case 'admin':
                     return redirect()->to('/admin/dashboard')
-                                   ->with('error', 'Anda tidak memiliki akses ke halaman tersebut');
+                        ->with('error', 'Anda tidak memiliki akses ke halaman tersebut');
                 case 'user':
                 default:
                     return redirect()->to('/user/dashboard')
-                                   ->with('error', 'Anda tidak memiliki akses ke halaman tersebut');
+                        ->with('error', 'Anda tidak memiliki akses ke halaman tersebut');
             }
         }
     }

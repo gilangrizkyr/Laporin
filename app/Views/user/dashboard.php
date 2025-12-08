@@ -16,7 +16,7 @@
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-primary text-white">
+        <div class="stat-card bg-primary text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['total']) ?></div>
@@ -30,7 +30,7 @@
     </div>
     
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-warning text-white">
+        <div class="stat-card bg-warning text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['pending']) ?></div>
@@ -44,7 +44,7 @@
     </div>
     
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-info text-white">
+        <div class="stat-card bg-info text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['in_progress']) ?></div>
@@ -58,7 +58,7 @@
     </div>
     
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-success text-white">
+        <div class="stat-card bg-success text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['resolved']) ?></div>

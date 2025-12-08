@@ -53,7 +53,7 @@ class SearchController extends BaseController
             // Search complaints with filters
             if ($type === 'complaints' || $type === 'all') {
                 $builder = $this->complaintModel->like('title', $q)->orLike('description', $q);
-                
+
                 if ($dateFrom) {
                     $builder->where('created_at >=', $dateFrom . ' 00:00:00');
                 }
@@ -72,18 +72,18 @@ class SearchController extends BaseController
                 if ($priority) {
                     $builder->where('priority', $priority);
                 }
-                
+
                 $results['complaints'] = $builder->orderBy('created_at', 'DESC')->findAll();
             }
 
             // Search KB articles
             if ($type === 'kb' || $type === 'all') {
                 $builder = $this->kbModel->like('title', $q)->orLike('content', $q)->where('is_published', 1);
-                
+
                 if ($catId) {
                     $builder->where('category_id', $catId);
                 }
-                
+
                 $results['kb'] = $builder->orderBy('view_count', 'DESC')->findAll();
             }
 
@@ -133,21 +133,33 @@ class SearchController extends BaseController
         if ($q === '') return $this->response->setJSON($out);
 
         // KB suggestions (title)
-        $kbRows = $this->kbModel->like('title', $q)->where('is_published', 1)->select('id,title')->orderBy('view_count','DESC')->limit(5)->findAll();
+        $kbRows = $this->kbModel->like('title', $q)->where('is_published', 1)->select('id,title')->orderBy('view_count', 'DESC')->limit(5)->findAll();
         foreach ($kbRows as $r) {
             $out['kb'][] = ['id' => $r->id, 'title' => $r->title, 'url' => base_url('knowledge-base/' . $r->id)];
         }
 
         // Complaint suggestions (title)
-        $cRows = $this->complaintModel->like('title', $q)->select('id,title')->orderBy('created_at','DESC')->limit(5)->findAll();
+        $cRows = $this->complaintModel->like('title', $q)->select('id,title')->orderBy('created_at', 'DESC')->limit(5)->findAll();
+        $currentRole = session()->get('role');
         foreach ($cRows as $r) {
-            $out['complaints'][] = ['id' => $r->id, 'title' => $r->title, 'url' => base_url('complaints/' . $r->id)];
+            if ($currentRole === 'admin' || $currentRole === 'superadmin') {
+                $url = base_url('admin/complaints/' . $r->id);
+            } elseif ($currentRole === 'user') {
+                $url = base_url('user/complaints/' . $r->id);
+            } else {
+                // Guest: point to login so they can access details after auth
+                $url = base_url('auth/login') . '?redirect=' . urlencode('user/complaints/' . $r->id);
+            }
+            $out['complaints'][] = ['id' => $r->id, 'title' => $r->title, 'url' => $url];
         }
 
         // User suggestions
-        $uRows = $this->userModel->like('full_name', $q)->orLike('email', $q)->select('id,full_name,email')->limit(5)->findAll();
-        foreach ($uRows as $r) {
-            $out['users'][] = ['id' => $r->id, 'name' => $r->full_name, 'email' => $r->email, 'url' => base_url('superadmin/users/' . $r->id . '/edit')];
+        // Only include user links for admin/superadmin
+        if (in_array($currentRole, ['admin', 'superadmin'])) {
+            $uRows = $this->userModel->like('full_name', $q)->orLike('email', $q)->select('id,full_name,email')->limit(5)->findAll();
+            foreach ($uRows as $r) {
+                $out['users'][] = ['id' => $r->id, 'name' => $r->full_name, 'email' => $r->email, 'url' => base_url('superadmin/users/' . $r->id . '/edit')];
+            }
         }
 
         return $this->response->setJSON($out);
@@ -205,11 +217,13 @@ class SearchController extends BaseController
 
         // gather user names for display
         $userModel = new \App\Models\UserModel();
-        $userIds = array_unique(array_filter(array_map(function($r){ return $r['user_id'] ?? null; }, $dataRows)));
+        $userIds = array_unique(array_filter(array_map(function ($r) {
+            return $r['user_id'] ?? null;
+        }, $dataRows)));
         $users = [];
         if (! empty($userIds)) {
             $userRows = $userModel->whereIn('id', $userIds)->select('id,full_name')->findAll();
-            foreach ($userRows as $u) $users[$u['id']] = $u['full_name'];
+            foreach ($userRows as $u) $users[$u->id] = $u->full_name;
         }
 
         return view('search/history', [

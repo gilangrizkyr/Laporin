@@ -9,11 +9,19 @@
 <div class="card">
     <div class="card-body">
         <table class="table table-striped">
-            <thead><tr><th>#</th><th>Name</th><th>Active</th><th>Actions</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
             <tbody>
+                <?php $no = 1; ?>
                 <?php foreach ($categories as $c): ?>
                     <tr>
-                        <td><?= $c->id ?></td>
+                        <td><?= $no++ ?></td>
                         <td><?= esc($c->name) ?></td>
                         <td><?= $c->is_active ? 'Yes' : 'No' ?></td>
                         <td>
@@ -28,5 +36,6 @@
         </table>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>

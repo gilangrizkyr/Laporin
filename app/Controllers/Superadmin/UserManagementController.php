@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controllers\Superadmin;
 
 use App\Controllers\BaseController;
@@ -17,12 +16,19 @@ class UserManagementController extends BaseController
     public function index()
     {
         $users = $this->userModel->orderBy('created_at', 'DESC')->findAll();
-        return view('superadmin/users/index', ['title' => 'Users', 'page_title' => 'User Management', 'users' => $users]);
+        return view('superadmin/users/index', [
+            'title' => 'Users',
+            'page_title' => 'User Management',
+            'users' => $users
+        ]);
     }
 
     public function create()
     {
-        return view('superadmin/users/form', ['title' => 'Create User', 'page_title' => 'Create User']);
+        return view('superadmin/users/form', [
+            'title' => 'Create User',
+            'page_title' => 'Create User'
+        ]);
     }
 
     public function store()
@@ -30,7 +36,12 @@ class UserManagementController extends BaseController
         $data = $this->request->getPost();
         $data['is_active'] = isset($data['is_active']) ? 1 : 0;
 
+        if (empty($data['password'])) {
+            return redirect()->back()->withInput()->with('errors', ['Password harus diisi']);
+        }
+
         $insertId = $this->userModel->insert($data);
+
         if ($insertId === false) {
             $errors = $this->userModel->errors();
             return redirect()->back()->withInput()->with('errors', $errors);
@@ -43,7 +54,12 @@ class UserManagementController extends BaseController
     {
         $user = $this->userModel->find($id);
         if (!$user) return redirect()->to(base_url('superadmin/users'))->with('error', 'User not found');
-        return view('superadmin/users/form', ['title' => 'Edit User', 'page_title' => 'Edit User', 'user' => $user]);
+
+        return view('superadmin/users/form', [
+            'title' => 'Edit User',
+            'page_title' => 'Edit User',
+            'user' => $user
+        ]);
     }
 
     public function update($id)
@@ -52,6 +68,7 @@ class UserManagementController extends BaseController
         $data['is_active'] = isset($data['is_active']) ? 1 : 0;
 
         $updated = $this->userModel->update($id, $data);
+
         if ($updated === false) {
             $errors = $this->userModel->errors();
             return redirect()->back()->withInput()->with('errors', $errors);
@@ -65,6 +82,7 @@ class UserManagementController extends BaseController
         if ($this->userModel->delete($id)) {
             return redirect()->to(base_url('superadmin/users'))->with('success', 'User deleted');
         }
+
         return redirect()->back()->with('error', 'Failed to delete user');
     }
 

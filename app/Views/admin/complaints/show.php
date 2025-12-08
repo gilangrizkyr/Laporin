@@ -53,7 +53,7 @@
                         <strong><?= esc($complaint->category_name ?? '-') ?></strong>
                     </div>
                 </div>
-                
+
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <small class="text-muted">Dampak:</small><br>
@@ -82,10 +82,10 @@
                                     <div class="card-body text-center">
                                         <?php if ($attachment->isImage()): ?>
                                             <a href="<?= $attachment->getFileUrl() ?>" target="_blank">
-                                                <img src="<?= $attachment->getFileUrl() ?>" 
-                                                     class="img-fluid rounded" 
-                                                     alt="<?= esc($attachment->file_name) ?>"
-                                                     style="max-height: 150px;">
+                                                <img src="<?= $attachment->getFileUrl() ?>"
+                                                    class="img-fluid rounded"
+                                                    alt="<?= esc($attachment->file_name) ?>"
+                                                    style="max-height: 150px;">
                                             </a>
                                         <?php else: ?>
                                             <i class="fas fa-file fa-3x text-muted mb-2"></i>
@@ -95,9 +95,9 @@
                                         </p>
                                         <small class="text-muted"><?= $attachment->getFileSizeFormatted() ?></small>
                                         <br>
-                                        <a href="<?= $attachment->getFileUrl() ?>" 
-                                           class="btn btn-sm btn-outline-primary mt-2" 
-                                           target="_blank">
+                                        <a href="<?= $attachment->getFileUrl() ?>"
+                                            class="btn btn-sm btn-outline-primary mt-2"
+                                            target="_blank">
                                             <i class="fas fa-download"></i> Download
                                         </a>
                                     </div>
@@ -137,8 +137,8 @@
             </div>
             <div class="card-body">
                 <div class="text-center py-3">
-                    <a href="<?= base_url('admin/complaints/' . $complaint->id . '/chat') ?>" 
-                       class="btn btn-primary">
+                    <a href="<?= base_url('admin/complaints/' . $complaint->id . '/chat') ?>"
+                        class="btn btn-primary">
                         <i class="fas fa-comment-dots"></i> Buka Chat Internal
                     </a>
                 </div>
@@ -181,13 +181,15 @@
 
                 <!-- Quick Actions -->
                 <div class="d-grid gap-2">
-                    <a href="<?= base_url('admin/complaints/' . $complaint->id . '/chat') ?>" 
-                       class="btn btn-info">
+                    <a href="<?= base_url('admin/complaints/' . $complaint->id . '/chat') ?>"
+                        class="btn btn-info">
                         <i class="fas fa-comment"></i> Chat dengan User
                     </a>
-                    <button class="btn btn-outline-secondary" onclick="alert('Export PDF coming soon')">
+                    <a href="<?= base_url('admin/complaints/' . $complaint->id . '/export-pdf') ?>"
+                        class="btn btn-sm btn-danger">
                         <i class="fas fa-file-pdf"></i> Export PDF
-                    </button>
+                    </a>
+
                 </div>
             </div>
         </div>
@@ -230,39 +232,96 @@
 
         <!-- History Timeline -->
         <div class="card">
-            <div class="card-header bg-white">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">
-                    <i class="fas fa-history"></i> Riwayat Aktivitas
+                    <i class="fas fa-history"></i> Riwayat Aktivitas (<?= count($history ?? []) ?>)
                 </h6>
+                <button class="btn btn-sm btn-outline-secondary" id="filterHistoryBtn" title="Filter by action">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <div id="filterDropdown" class="card p-3" style="display:none; position: absolute; right: 20px; top: 60px; z-index:50; width: 240px;">
+                    <h6 class="mb-2">Filter Riwayat</h6>
+                    <?php foreach (\App\Models\ComplaintHistoryModel::getActionSummary($history ?? []) as $action => $count): ?>
+                        <div class="form-check">
+                            <input class="form-check-input history-filter" type="checkbox" value="<?= esc($action) ?>" id="filter_<?= esc($action) ?>" checked>
+                            <label class="form-check-label small" for="filter_<?= esc($action) ?>"><?= \App\Models\ComplaintHistoryModel::getActionLabel($action) ?> (<?= $count ?>)</label>
+                        </div>
+                    <?php endforeach; ?>
+                    <div class="mt-2 d-flex justify-content-end gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" id="clearFilters">Clear</button>
+                        <button class="btn btn-sm btn-primary" id="applyFilters">Apply</button>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <?php if (!empty($history)): ?>
+                    <!-- Action Stats -->
+                    <div class="row mb-3 text-center">
+                        <?php $stats = \App\Models\ComplaintHistoryModel::getActionSummary($history); ?>
+                        <?php foreach ($stats as $action => $count): ?>
+                            <div class="col-6 col-md-3 mb-2">
+                                <small class="text-muted d-block"><?= $action ?></small>
+                                <strong class="text-primary"><?= $count ?></strong>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <hr>
+
+                    <!-- Timeline -->
                     <div class="timeline">
                         <?php foreach ($history as $h): ?>
-                            <div class="timeline-item mb-3">
+                            <div class="timeline-item mb-3" data-action="<?= $h['action'] ?>">
                                 <div class="d-flex">
-                                    <div class="timeline-icon me-2">
-                                        <i class="fas fa-circle text-primary" style="font-size: 8px;"></i>
+                                    <div class="timeline-icon me-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width: 40px; height: 40px; background-color: var(--bs-<?= \App\Models\ComplaintHistoryModel::getActionBadgeClass($h['action']) ?>); color: white;">
+                                            <i class="fas <?= \App\Models\ComplaintHistoryModel::getActionIcon($h['action']) ?>"></i>
+                                        </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <strong><?= $h->getActionLabel() ?></strong>
-                                        <?php if ($h->role == 'admin' || $h->role == 'superadmin'): ?>
-                                            <span class="badge bg-info">Admin</span>
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <span class="badge bg-<?= \App\Models\ComplaintHistoryModel::getActionBadgeClass($h['action']) ?>">
+                                                    <?= \App\Models\ComplaintHistoryModel::getActionLabel($h['action']) ?>
+                                                </span>
+                                            </div>
+                                            <small class="text-muted">
+                                                <?= date('d M Y H:i', strtotime($h['created_at'])) ?>
+                                            </small>
+                                        </div>
+                                        <p class="mb-1 mt-2">
+                                            <strong><?= esc($h['user_name'] ?? 'System') ?></strong>
+                                            <?php if (!empty($h['user_email'])): ?>
+                                                <span class="text-muted">(<?= esc($h['user_email']) ?>)</span>
+                                            <?php endif; ?>
+                                        </p>
+                                        <?php if ($h['description']): ?>
+                                            <p class="mb-2 text-muted"><em><?= esc($h['description']) ?></em></p>
                                         <?php endif; ?>
-                                        <br>
-                                        <?php if ($h->description): ?>
-                                            <small class="text-muted"><?= esc($h->description) ?></small><br>
+                                        <?php if ($h['old_value'] || $h['new_value']): ?>
+                                            <div class="row mt-2 mb-0">
+                                                <?php if ($h['old_value']): ?>
+                                                    <div class="col-md-6">
+                                                        <small><strong>Sebelum:</strong></small><br>
+                                                        <code class="text-muted"><?= esc($h['old_value']) ?></code>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if ($h['new_value']): ?>
+                                                    <div class="col-md-6">
+                                                        <small><strong>Sesudah:</strong></small><br>
+                                                        <code class="text-success"><?= esc($h['new_value']) ?></code>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
                                         <?php endif; ?>
-                                        <small class="text-muted">
-                                            <?= esc($h->user_name) ?> • <?= $h->getTimeDiff() ?>
-                                        </small>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <p class="text-muted text-center">Belum ada aktivitas</p>
+                    <p class="text-muted text-center py-4">Belum ada aktivitas</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -273,64 +332,100 @@
 
 <?= $this->section('scripts') ?>
 <script>
-function changeStatus(complaintId) {
-    const status = document.getElementById('statusSelect').value;
-    
-    if (!confirm('Ubah status menjadi ' + status + '?')) {
-        location.reload();
-        return;
+    function changeStatus(complaintId) {
+        const status = document.getElementById('statusSelect').value;
+
+        if (!confirm('Ubah status menjadi ' + status + '?')) {
+            location.reload();
+            return;
+        }
+
+        fetch(`<?= base_url('admin/complaints/') ?>${complaintId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `status=${status}&<?= csrf_token() ?>=<?= csrf_hash() ?>`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan');
+            });
     }
 
-    fetch(`<?= base_url('admin/complaints/') ?>${complaintId}/status`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `status=${status}&<?= csrf_token() ?>=<?= csrf_hash() ?>`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan');
-    });
-}
+    function changePriority(complaintId) {
+        const priority = document.getElementById('prioritySelect').value;
 
-function changePriority(complaintId) {
-    const priority = document.getElementById('prioritySelect').value;
-    
-    if (!confirm('Ubah prioritas menjadi ' + priority + '?')) {
-        location.reload();
-        return;
+        if (!confirm('Ubah prioritas menjadi ' + priority + '?')) {
+            location.reload();
+            return;
+        }
+
+        fetch(`<?= base_url('admin/complaints/') ?>${complaintId}/priority`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `priority=${priority}&<?= csrf_token() ?>=<?= csrf_hash() ?>`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan');
+            });
     }
+</script>
+<script>
+    // History filter dropdown behavior
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('filterHistoryBtn');
+        const dropdown = document.getElementById('filterDropdown');
+        const applyBtn = document.getElementById('applyFilters');
+        const clearBtn = document.getElementById('clearFilters');
 
-    fetch(`<?= base_url('admin/complaints/') ?>${complaintId}/priority`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `priority=${priority}&<?= csrf_token() ?>=<?= csrf_hash() ?>`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan');
+        btn?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Hide when clicking outside
+        document.addEventListener('click', function() {
+            if (dropdown) dropdown.style.display = 'none';
+        });
+
+        applyBtn?.addEventListener('click', function(e) {
+            e.preventDefault();
+            const checked = Array.from(document.querySelectorAll('.history-filter:checked')).map(i => i.value);
+            document.querySelectorAll('.timeline-item').forEach(function(item) {
+                const a = item.dataset.action;
+                item.style.display = checked.includes(a) ? '' : 'none';
+            });
+            dropdown.style.display = 'none';
+        });
+
+        clearBtn?.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.history-filter').forEach(i => i.checked = false);
+            document.querySelectorAll('.timeline-item').forEach(item => item.style.display = 'none');
+            dropdown.style.display = 'none';
+        });
     });
-}
 </script>
 <?= $this->endSection() ?>

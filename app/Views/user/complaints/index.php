@@ -63,7 +63,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th style="width: 80px;">ID</th>
+                            <th style="width: 80px;">No</th>
                             <th>Judul</th>
                             <th style="width: 120px;">Prioritas</th>
                             <th style="width: 130px;">Status</th>
@@ -72,10 +72,12 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php $no = 1; // Mulai nomor urut dari 1 
+                        ?>
                         <?php foreach ($complaints as $complaint): ?>
                             <tr>
                                 <td>
-                                    <strong>#<?= $complaint->id ?></strong>
+                                    <strong><?= $no++ ?></strong>
                                 </td>
                                 <td>
                                     <a href="<?= base_url('user/complaints/' . $complaint->id) ?>" class="text-decoration-none fw-bold">
@@ -96,13 +98,13 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="<?= base_url('user/complaints/' . $complaint->id) ?>" 
-                                           class="btn btn-outline-primary" title="Detail">
+                                        <a href="<?= base_url('user/complaints/' . $complaint->id) ?>"
+                                            class="btn btn-outline-primary" title="Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <?php if ($complaint->isPending()): ?>
-                                            <a href="<?= base_url('user/complaints/' . $complaint->id . '/edit') ?>" 
-                                               class="btn btn-outline-warning" title="Edit">
+                                            <a href="<?= base_url('user/complaints/' . $complaint->id . '/edit') ?>"
+                                                class="btn btn-outline-warning" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         <?php endif; ?>
@@ -137,5 +139,6 @@
         <?php endif; ?>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>

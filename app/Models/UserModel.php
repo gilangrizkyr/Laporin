@@ -29,7 +29,7 @@ class UserModel extends Model
     protected $validationRules = [
         'username'  => 'required|min_length[3]|max_length[50]|is_unique[users.username,id,{id}]',
         'email'     => 'required|valid_email|is_unique[users.email,id,{id}]',
-        'password'  => 'required|min_length[6]',
+        'password'  => 'permit_empty|min_length[6]',
         'full_name' => 'required|min_length[3]|max_length[100]',
         'role'      => 'required|in_list[user,admin,superadmin]',
     ];
@@ -46,7 +46,6 @@ class UserModel extends Model
             'is_unique'   => 'Email sudah terdaftar'
         ],
         'password' => [
-            'required'   => 'Password harus diisi',
             'min_length' => 'Password minimal 6 karakter'
         ]
     ];
@@ -56,8 +55,11 @@ class UserModel extends Model
 
     protected function hashPassword(array $data)
     {
-        if (isset($data['data']['password'])) {
+        // Hanya hash password jika field diisi
+        if (!empty($data['data']['password'])) {
             $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+        } else {
+            unset($data['data']['password']); // jangan update password jika kosong
         }
         return $data;
     }
@@ -104,9 +106,7 @@ class UserModel extends Model
     public function toggleActive(int $userId): bool
     {
         $user = $this->find($userId);
-        if (!$user) {
-            return false;
-        }
+        if (!$user) return false;
 
         return $this->update($userId, [
             'is_active' => !$user->is_active

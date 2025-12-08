@@ -203,18 +203,38 @@
                 <?php if (!empty($history)): ?>
                     <div class="timeline">
                         <?php foreach ($history as $h): ?>
-                            <div class="timeline-item mb-3">
+                            <?php
+                            $action = $h['action'] ?? null;
+                            $createdAt = $h['created_at'] ?? null;
+                            // Relative time
+                            $timeDiff = 'Baru saja';
+                            if ($createdAt) {
+                                $created = new DateTime($createdAt);
+                                $now = new DateTime();
+                                $diff = $now->diff($created);
+                                if ($diff->days > 0) {
+                                    $timeDiff = $diff->days . ' hari yang lalu';
+                                } elseif ($diff->h > 0) {
+                                    $timeDiff = $diff->h . ' jam yang lalu';
+                                } elseif ($diff->i > 0) {
+                                    $timeDiff = $diff->i . ' menit yang lalu';
+                                }
+                            }
+                            ?>
+                            <div class="timeline-item mb-3" data-action="<?= esc($action) ?>">
                                 <div class="d-flex">
                                     <div class="timeline-icon me-2">
-                                        <i class="fas fa-circle text-primary" style="font-size: 8px;"></i>
+                                        <div class="rounded-circle" style="width:28px;height:28px;background-color:var(--bs-<?= \App\Models\ComplaintHistoryModel::getActionBadgeClass($action) ?>);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;">
+                                            <i class="fas <?= \App\Models\ComplaintHistoryModel::getActionIcon($action) ?>"></i>
+                                        </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <strong><?= $h->getActionLabel() ?></strong><br>
-                                        <?php if ($h->description): ?>
-                                            <small class="text-muted"><?= esc($h->description) ?></small><br>
+                                        <strong><?= \App\Models\ComplaintHistoryModel::getActionLabel($action) ?></strong><br>
+                                        <?php if (!empty($h['description'])): ?>
+                                            <small class="text-muted"><?= esc($h['description']) ?></small><br>
                                         <?php endif; ?>
                                         <small class="text-muted">
-                                            <?= esc($h->user_name) ?> • <?= $h->getTimeDiff() ?>
+                                            <?= esc($h['user_name'] ?? 'System') ?> • <?= $timeDiff ?>
                                         </small>
                                     </div>
                                 </div>

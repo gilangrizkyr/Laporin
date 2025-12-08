@@ -9,11 +9,20 @@
 <div class="card">
     <div class="card-body">
         <table class="table table-striped">
-            <thead><tr><th>#</th><th>Name</th><th>Critical</th><th>Active</th><th>Actions</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Critical</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
             <tbody>
+                <?php $no = 1; ?>
                 <?php foreach ($apps as $a): ?>
                     <tr>
-                        <td><?= $a->id ?></td>
+                        <td><?= $no++ ?></td>
                         <td><?= esc($a->name) ?></td>
                         <td><?= $a->is_critical ? 'Yes' : 'No' ?></td>
                         <td><?= $a->is_active ? 'Yes' : 'No' ?></td>
@@ -29,5 +38,6 @@
         </table>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>

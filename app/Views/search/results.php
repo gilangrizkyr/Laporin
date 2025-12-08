@@ -12,10 +12,10 @@
             </div>
             <div class="col-md-2">
                 <select name="type" class="form-select form-select-sm">
-                    <option value="all" <?= ($type=='all' || !$type) ? 'selected' : '' ?>>All Types</option>
-                    <option value="complaints" <?= $type=='complaints' ? 'selected' : '' ?>>Complaints</option>
-                    <option value="kb" <?= $type=='kb' ? 'selected' : '' ?>>KB</option>
-                    <option value="users" <?= $type=='users' ? 'selected' : '' ?>>Users</option>
+                    <option value="all" <?= ($type == 'all' || !$type) ? 'selected' : '' ?>>All Types</option>
+                    <option value="complaints" <?= $type == 'complaints' ? 'selected' : '' ?>>Complaints</option>
+                    <option value="kb" <?= $type == 'kb' ? 'selected' : '' ?>>KB</option>
+                    <option value="users" <?= $type == 'users' ? 'selected' : '' ?>>Users</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -28,7 +28,7 @@
                 <select name="app_id" class="form-select form-select-sm">
                     <option value="">All Apps</option>
                     <?php foreach ($applications as $app): ?>
-                        <option value="<?= $app['id'] ?>" <?= $appId == $app['id'] ? 'selected' : '' ?>><?= esc($app['name']) ?></option>
+                        <option value="<?= $app->id ?>" <?= $appId == $app->id ? 'selected' : '' ?>><?= esc($app->name) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -43,7 +43,7 @@
                 <select name="category_id" class="form-select form-select-sm">
                     <option value="">All Categories</option>
                     <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>" <?= $catId == $cat['id'] ? 'selected' : '' ?>><?= esc($cat['name']) ?></option>
+                        <option value="<?= $cat->id ?>" <?= $catId == $cat->id ? 'selected' : '' ?>><?= esc($cat->name) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -109,14 +109,15 @@
                 <?php if (!empty($results['kb'])): ?>
                     <div class="list-group">
                         <?php foreach ($results['kb'] as $kb): ?>
-                            <a href="<?= base_url('knowledge-base/' . $kb['id']) ?>" class="list-group-item list-group-item-action">
+                            <a href="<?= base_url('knowledge-base/' . $kb->id) ?>" class="list-group-item list-group-item-action">
                                 <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1"><?= esc($kb['title']) ?></h6>
-                                    <span class="badge bg-light text-dark"><?= $kb['view_count'] ?> views</span>
+                                    <h6 class="mb-1"><?= esc($kb->title) ?></h6>
+                                    <span class="badge bg-light text-dark"><?= $kb->view_count ?> views</span>
                                 </div>
-                                <p class="mb-1 text-muted"><?= substr(strip_tags($kb['content']), 0, 80) ?>...</p>
-                                <small><?= date('Y-m-d', strtotime($kb['created_at'])) ?></small>
+                                <p class="mb-1 text-muted"><?= substr(strip_tags($kb->content), 0, 80) ?>...</p>
+                                <small><?= date('Y-m-d', strtotime($kb->created_at)) ?></small>
                             </a>
+
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
@@ -136,11 +137,12 @@
                 <?php if (!empty($results['users'])): ?>
                     <div class="list-group">
                         <?php foreach ($results['users'] as $u): ?>
-                            <a href="<?= base_url('superadmin/users/' . $u['id'] . '/edit') ?>" class="list-group-item list-group-item-action">
-                                <h6 class="mb-1"><?= esc($u['full_name']) ?></h6>
-                                <small class="text-muted"><?= esc($u['email']) ?></small>
+                            <a href="<?= base_url('superadmin/users/' . $u->id . '/edit') ?>" class="list-group-item list-group-item-action">
+                                <h6 class="mb-1"><?= esc($u->full_name) ?></h6>
+                                <small class="text-muted"><?= esc($u->email) ?></small>
                             </a>
                         <?php endforeach; ?>
+
                     </div>
                 <?php else: ?>
                     <p class="text-muted text-center">No users found</p>

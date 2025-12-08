@@ -93,7 +93,7 @@ class ComplaintController extends BaseController
 
         if (!$complaint) {
             return redirect()->to('admin/complaints')
-                           ->with('error', 'Laporan tidak ditemukan');
+                ->with('error', 'Laporan tidak ditemukan');
         }
 
         // Get user info
@@ -146,11 +146,11 @@ class ComplaintController extends BaseController
 
         if (!$complaint) {
             return redirect()->to('admin/complaints')
-                           ->with('error', 'Laporan tidak ditemukan');
+                ->with('error', 'Laporan tidak ditemukan');
         }
 
         $adminId = session()->get('user_id');
-        
+
         // Update complaint
         $this->complaintModel->update($id, [
             'assigned_to' => $adminId,
@@ -164,7 +164,9 @@ class ComplaintController extends BaseController
             'assigned',
             null,
             session()->get('full_name'),
-            'Laporan ditugaskan ke ' . session()->get('full_name')
+            'Laporan ditugaskan ke ' . session()->get('full_name'),
+            session()->get('full_name'),
+            session()->get('email')
         );
 
         // Notify user
@@ -175,7 +177,7 @@ class ComplaintController extends BaseController
         );
 
         return redirect()->to('admin/complaints/' . $id)
-                       ->with('success', 'Laporan berhasil di-assign ke Anda');
+            ->with('success', 'Laporan berhasil di-assign ke Anda');
     }
 
     /**
@@ -206,7 +208,7 @@ class ComplaintController extends BaseController
 
         // Update status
         $updateData = ['status' => $newStatus];
-        
+
         if ($newStatus === 'resolved') {
             $updateData['resolved_at'] = date('Y-m-d H:i:s');
         } elseif ($newStatus === 'closed') {
@@ -222,7 +224,9 @@ class ComplaintController extends BaseController
             'status_changed',
             $oldStatus,
             $newStatus,
-            'Status diubah dari ' . $oldStatus . ' menjadi ' . $newStatus
+            'Status diubah dari ' . $oldStatus . ' menjadi ' . $newStatus,
+            session()->get('full_name'),
+            session()->get('email')
         );
 
         // Notify user
@@ -282,7 +286,9 @@ class ComplaintController extends BaseController
             'priority_changed',
             $oldPriority,
             $newPriority,
-            'Prioritas diubah dari ' . $oldPriority . ' menjadi ' . $newPriority . ' oleh admin'
+            'Prioritas diubah dari ' . $oldPriority . ' menjadi ' . $newPriority . ' oleh admin',
+            session()->get('full_name'),
+            session()->get('email')
         );
 
         return $this->response->setJSON([
@@ -296,18 +302,123 @@ class ComplaintController extends BaseController
      */
     public function exportPdf($id)
     {
-        // TODO: Implement PDF export
-        return redirect()->back()
-                       ->with('info', 'Fitur export PDF akan segera tersedia');
+        $complaint = $this->complaintModel->find($id);
+        if (!$complaint) {
+            return $this->response->setStatusCode(404)->setBody('Complaint not found');
+        }
+
+        $user = $this->userModel->find($complaint->user_id);
+        $app = $this->applicationModel->find($complaint->application_id);
+        $category = $this->categoryModel->find($complaint->category_id);
+        $assignedTo = $complaint->assigned_to ? $this->userModel->find($complaint->assigned_to) : null;
+        $attachments = $this->attachmentModel->where('complaint_id', $id)->findAll();
+        $history = $this->historyModel->where('complaint_id', $id)->orderBy('created_at', 'DESC')->findAll();
+        $feedback = $this->feedbackModel->where('complaint_id', $id)->first();
+
+        // Generate HTML for PDF
+        $html = view('admin/complaints/export_pdf', [
+            'complaint' => $complaint,
+            'user' => $user,
+            'app' => $app,
+            'category' => $category,
+            'assignedTo' => $assignedTo,
+            'attachments' => $attachments,
+            'history' => $history,
+            'feedback' => $feedback,
+        ]);
+
+        // Generate PDF using Dompdf
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'Laporan_' . str_pad($complaint->id, 6, '0', STR_PAD_LEFT) . '_' . date('Y-m-d') . '.pdf';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($dompdf->output());
     }
 
     /**
-     * Export complaints to Excel
+     * Export filtered complaints to Excel
      */
     public function exportExcel()
     {
-        // TODO: Implement Excel export
-        return redirect()->back()
-                       ->with('info', 'Fitur export Excel akan segera tersedia');
+        // Get filters
+        $filters = [
+            'status' => $this->request->getGet('status'),
+            'priority' => $this->request->getGet('priority'),
+            'application_id' => $this->request->getGet('application_id'),
+            'assigned_to' => $this->request->getGet('assigned_to'),
+            'date_from' => $this->request->getGet('date_from'),
+            'date_to' => $this->request->getGet('date_to'),
+        ];
+
+        $complaints = $this->complaintModel->getAllComplaints($filters);
+
+        // Create spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Laporan Keluhan');
+
+        // Header
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Pengguna');
+        $sheet->setCellValue('C1', 'Email');
+        $sheet->setCellValue('D1', 'Aplikasi');
+        $sheet->setCellValue('E1', 'Kategori');
+        $sheet->setCellValue('F1', 'Judul');
+        $sheet->setCellValue('G1', 'Status');
+        $sheet->setCellValue('H1', 'Prioritas');
+        $sheet->setCellValue('I1', 'Ditugaskan ke');
+        $sheet->setCellValue('J1', 'Tanggal Dibuat');
+        $sheet->setCellValue('K1', 'Tanggal Diselesaikan');
+
+        // Style header
+        $headerStyle = [
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '1976D2']],
+            'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
+        ];
+        $sheet->getStyle('A1:K1')->applyFromArray($headerStyle);
+
+        // Data rows
+        $row = 2;
+        foreach ($complaints as $c) {
+            $user = $this->userModel->find($c->user_id);
+            $app = $this->applicationModel->find($c->application_id);
+            $category = $this->categoryModel->find($c->category_id);
+            $assignedUser = $c->assigned_to ? $this->userModel->find($c->assigned_to) : null;
+
+            $sheet->setCellValue('A' . $row, $c->id);
+            $sheet->setCellValue('B' . $row, $user ? $user->full_name : '-');
+            $sheet->setCellValue('C' . $row, $user ? $user->email : '-');
+            $sheet->setCellValue('D' . $row, $app ? $app->name : '-');
+            $sheet->setCellValue('E' . $row, $category ? $category->name : '-');
+            $sheet->setCellValue('F' . $row, $c->title);
+            $sheet->setCellValue('G' . $row, ucfirst(str_replace('_', ' ', $c->status)));
+            $sheet->setCellValue('H' . $row, ucfirst($c->priority));
+            $sheet->setCellValue('I' . $row, $assignedUser ? $assignedUser->full_name : '-');
+            $sheet->setCellValue('J' . $row, date('Y-m-d H:i', strtotime($c->created_at)));
+            $sheet->setCellValue('K' . $row, $c->resolved_at ? date('Y-m-d H:i', strtotime($c->resolved_at)) : '-');
+
+            $row++;
+        }
+
+        // Auto-adjust column widths
+        foreach (range('A', 'K') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Generate file
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Laporan_Keluhan_' . date('Y-m-d_His') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        $writer->save('php://output');
+        exit;
     }
 }

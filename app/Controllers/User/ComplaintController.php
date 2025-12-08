@@ -41,17 +41,17 @@ class ComplaintController extends BaseController
     public function index()
     {
         $userId = session()->get('user_id');
-        
+
         // Get filter from query string
         $status = $this->request->getGet('status');
         $priority = $this->request->getGet('priority');
-        
+
         // Get complaints
         $complaints = $this->complaintModel->getComplaintsByUser($userId, $status);
-        
+
         // Filter by priority if provided
         if ($priority) {
-            $complaints = array_filter($complaints, function($c) use ($priority) {
+            $complaints = array_filter($complaints, function ($c) use ($priority) {
                 return $c->priority === $priority;
             });
         }
@@ -98,8 +98,8 @@ class ComplaintController extends BaseController
 
         if (!$this->validate($rules)) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('errors', $this->validator->getErrors());
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
         // Calculate priority based on impact and application
@@ -125,15 +125,15 @@ class ComplaintController extends BaseController
 
         if (!$complaintId) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Gagal membuat laporan. Silakan coba lagi.');
+                ->withInput()
+                ->with('error', 'Gagal membuat laporan. Silakan coba lagi.');
         }
 
         // Handle file uploads
         $files = $this->request->getFileMultiple('attachments');
         if ($files) {
             $uploadedFiles = $this->fileUploadHandler->uploadMultiple($files);
-            
+
             foreach ($uploadedFiles as $fileData) {
                 $this->attachmentModel->insert([
                     'complaint_id' => $complaintId,
@@ -153,7 +153,9 @@ class ComplaintController extends BaseController
             'created',
             null,
             null,
-            'Laporan dibuat dengan prioritas: ' . $priority
+            'Laporan dibuat dengan prioritas: ' . $priority,
+            session()->get('full_name'),
+            session()->get('email')
         );
 
         // Send notification to admins
@@ -163,7 +165,7 @@ class ComplaintController extends BaseController
         );
 
         return redirect()->to('user/complaints/' . $complaintId)
-                       ->with('success', 'Laporan berhasil dibuat! Admin akan segera menindaklanjuti.');
+            ->with('success', 'Laporan berhasil dibuat! Admin akan segera menindaklanjuti.');
     }
 
     /**
@@ -172,7 +174,7 @@ class ComplaintController extends BaseController
     public function show($id)
     {
         $userId = session()->get('user_id');
-        
+
         // Get complaint with relations
         $complaint = $this->complaintModel
             ->select('complaints.*, applications.name as application_name, categories.name as category_name, users.full_name as user_name')
@@ -184,13 +186,13 @@ class ComplaintController extends BaseController
 
         if (!$complaint) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Laporan tidak ditemukan');
+                ->with('error', 'Laporan tidak ditemukan');
         }
 
         // Check ownership
         if ($complaint->user_id != $userId) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Anda tidak memiliki akses ke laporan ini');
+                ->with('error', 'Anda tidak memiliki akses ke laporan ini');
         }
 
         // Get attachments
@@ -233,12 +235,12 @@ class ComplaintController extends BaseController
 
         if (!$complaint || $complaint->user_id != $userId) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Laporan tidak ditemukan');
+                ->with('error', 'Laporan tidak ditemukan');
         }
 
         if (!$complaint->isPending()) {
             return redirect()->to('user/complaints/' . $id)
-                           ->with('error', 'Laporan yang sedang diproses tidak dapat diedit');
+                ->with('error', 'Laporan yang sedang diproses tidak dapat diedit');
         }
 
         $data = [
@@ -262,7 +264,7 @@ class ComplaintController extends BaseController
 
         if (!$complaint || $complaint->user_id != $userId || !$complaint->isPending()) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Tidak dapat mengupdate laporan ini');
+                ->with('error', 'Tidak dapat mengupdate laporan ini');
         }
 
         // Validation
@@ -276,8 +278,8 @@ class ComplaintController extends BaseController
 
         if (!$this->validate($rules)) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('errors', $this->validator->getErrors());
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
         // Recalculate priority
@@ -304,11 +306,13 @@ class ComplaintController extends BaseController
             'updated',
             null,
             null,
-            'Laporan diupdate oleh user'
+            'Laporan diupdate oleh user',
+            session()->get('full_name'),
+            session()->get('email')
         );
 
         return redirect()->to('user/complaints/' . $id)
-                       ->with('success', 'Laporan berhasil diupdate');
+            ->with('success', 'Laporan berhasil diupdate');
     }
 
     /**
@@ -321,7 +325,7 @@ class ComplaintController extends BaseController
 
         if (!$complaint || $complaint->user_id != $userId || !$complaint->isPending()) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Tidak dapat menghapus laporan ini');
+                ->with('error', 'Tidak dapat menghapus laporan ini');
         }
 
         // Delete attachments files
@@ -334,6 +338,6 @@ class ComplaintController extends BaseController
         $this->complaintModel->delete($id);
 
         return redirect()->to('user/complaints')
-                       ->with('success', 'Laporan berhasil dihapus');
+            ->with('success', 'Laporan berhasil dihapus');
     }
 }

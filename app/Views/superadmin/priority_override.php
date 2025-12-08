@@ -35,7 +35,7 @@
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-warning">Override Priority</button>
-                <a href="<?= base_url('admin/complaints/' . $complaint->id) ?>" class="btn btn-secondary">Cancel</a>
+                <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

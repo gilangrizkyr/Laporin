@@ -9,11 +9,21 @@
 <div class="card">
     <div class="card-body">
         <table class="table table-striped">
-            <thead><tr><th>#</th><th>Full Name</th><th>Email</th><th>Role</th><th>Active</th><th>Actions</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
             <tbody>
+                <?php $no = 1; ?>
                 <?php foreach ($users as $u): ?>
                     <tr>
-                        <td><?= $u->id ?></td>
+                        <td><?= $no++ ?></td>
                         <td><?= esc($u->full_name) ?></td>
                         <td><?= esc($u->email) ?></td>
                         <td><?= esc($u->role) ?></td>

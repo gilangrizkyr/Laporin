@@ -13,7 +13,7 @@
 <!-- Global Statistics -->
 <div class="row mb-4">
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-primary text-white">
+        <div class="stat-card bg-primary text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['total']) ?></div>
@@ -27,7 +27,7 @@
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-warning text-white">
+        <div class="stat-card bg-warning text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['pending']) ?></div>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-info text-white">
+        <div class="stat-card bg-info text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['in_progress']) ?></div>
@@ -55,7 +55,7 @@
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="stat-card bg-danger text-white">
+        <div class="stat-card bg-danger text-black">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="stat-number"><?= number_format($stats['urgent']) ?></div>
@@ -130,7 +130,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>Judul</th>
                             <th>Pelapor</th>
                             <th>Prioritas</th>
@@ -140,9 +140,10 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php $no = 1; ?>
                         <?php foreach ($recentComplaints as $complaint): ?>
                             <tr>
-                                <td><strong>#<?= $complaint->id ?></strong></td>
+                                <td><strong><?= $no++ ?></strong></td>
                                 <td>
                                     <a href="<?= base_url('admin/complaints/' . $complaint->id) ?>" class="text-decoration-none">
                                         <?= esc($complaint->title) ?>
@@ -174,6 +175,7 @@
             </div>
         <?php endif; ?>
     </div>
+
 </div>
 
 <?= $this->endSection() ?>

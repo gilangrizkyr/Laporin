@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2>System Analytics</h2>
-        <p class="text-muted mb-0">System-wide complaint analytics and metrics</p>
+        <p class="text-muted mb-0">Analisis dan metrik keluhan di seluruh sistem</p>
     </div>
     <div>
         <form action="<?= base_url('superadmin/analytics') ?>" method="get" class="d-inline">
@@ -38,7 +38,11 @@
             <div class="card-body">
                 <h5 class="card-title">Year <?= $year ?></h5>
                 <h3 class="text-info">
-                    <?php $total = 0; foreach ($byMonth as $m) { $total += (int)$m['total']; } echo $total; ?>
+                    <?php $total = 0;
+                    foreach ($byMonth as $m) {
+                        $total += (int)$m['total'];
+                    }
+                    echo $total; ?>
                     <small class="text-muted">total complaints</small>
                 </h3>
             </div>
@@ -72,7 +76,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $totalComplaints = array_sum(array_column($topApps, 'total_complaints')); ?>
+                    <?php
+                    $totalComplaints = array_sum(array_column($topApps, 'total_complaints'));
+                    ?>
                     <?php foreach ($topApps as $app): ?>
                         <tr>
                             <td><?= esc($app['name']) ?></td>
@@ -81,12 +87,20 @@
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+                <tfoot>
+                    <tr style="font-weight:bold; background:#f5f5f5;">
+                        <td>Total</td>
+                        <td class="text-end"><?= $totalComplaints ?></td>
+                        <td class="text-end">100%</td>
+                    </tr>
+                </tfoot>
             </table>
         <?php else: ?>
             <p class="text-muted">No data available</p>
         <?php endif; ?>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>
 
@@ -95,9 +109,9 @@
 <script>
     const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
     const monthlyData = <?= json_encode(array_column($byMonth, 'total')) ?>;
-    
+
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
+
     new Chart(monthlyCtx, {
         type: 'line',
         data: {
@@ -114,10 +128,18 @@
         options: {
             responsive: true,
             plugins: {
-                legend: { display: true, position: 'top' }
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
             },
             scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
             }
         }
     });

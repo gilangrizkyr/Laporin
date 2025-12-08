@@ -44,7 +44,7 @@ $routes->group('auth', ['namespace' => 'App\Controllers\Auth'], function ($route
 
 // ========== USER ROUTES (Auth Required, Role: user) ========== //
 
-$routes->group('user', ['namespace' => 'App\Controllers\User', 'filter' => 'auth'], function ($routes) {
+$routes->group('user', ['namespace' => 'App\Controllers\User', 'filter' => 'role:user'], function ($routes) {
 
     // Dashboard
     $routes->get('dashboard', 'DashboardController::index', ['as' => 'user.dashboard']);
@@ -95,7 +95,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
     // Analytics
     $routes->get('analytics', 'AnalyticsController::index', ['as' => 'admin.analytics']);
     $routes->get('analytics/export', 'AnalyticsController::export', ['as' => 'admin.analytics.export']);
-    $routes->get('analytics/export-pdf', 'AnalyticsController::exportPdf', ['as' => 'admin.analytics.exportPdf']);
+    $routes->get('analytics/export-pdf', 'AnalyticsController::exportAnalyticsPdf', ['as' => 'admin.analytics.exportPdf']);
 
     // Analytics API endpoints (JSON)
     $routes->get('analytics/api/monthly-avg/(:num)', 'AnalyticsController::apiMonthlyAvgResolution/$1');
@@ -108,6 +108,11 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
     // Export Complaints
     $routes->get('complaints/(:num)/export-pdf', 'ComplaintController::exportPdf/$1', ['as' => 'admin.complaints.pdf']);
     $routes->get('complaints/export-excel', 'ComplaintController::exportExcel', ['as' => 'admin.complaints.excel']);
+
+    // Custom Reports
+    $routes->get('reports', 'ReportGeneratorController::index', ['as' => 'admin.reports']);
+    $routes->post('reports/generate', 'ReportGeneratorController::generate', ['as' => 'admin.reports.generate']);
+    $routes->get('reports/download/(:any)', 'ReportGeneratorController::download/$1', ['as' => 'admin.reports.download']);
 
     // Knowledge Base Management
     $routes->get('knowledge-base', 'KnowledgeBaseController::index', ['as' => 'admin.kb']);
@@ -164,5 +169,5 @@ $routes->group('superadmin', ['namespace' => 'App\Controllers\Superadmin', 'filt
     $routes->get('analytics/export', 'SystemAnalyticsController::export', ['as' => 'superadmin.analytics.export']);
     $routes->get('analytics/export-excel', 'SystemAnalyticsController::exportExcel', ['as' => 'superadmin.analytics.exportExcel']);
     // Priority override
-    $routes->match(['get','post'], 'complaints/(:num)/override-priority', 'PriorityController::override/$1', ['as' => 'superadmin.priority.override']);
+    $routes->match(['get', 'post'], 'complaints/(:num)/override-priority', 'PriorityController::override/$1', ['as' => 'superadmin.priority.override']);
 });

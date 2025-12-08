@@ -25,14 +25,16 @@
             <div class="mb-3">
                 <label>Role</label>
                 <select name="role" class="form-select">
-                    <option value="user" <?= (isset($user) && $user->role=='user') ? 'selected' : '' ?>>User</option>
-                    <option value="admin" <?= (isset($user) && $user->role=='admin') ? 'selected' : '' ?>>Admin</option>
-                    <option value="superadmin" <?= (isset($user) && $user->role=='superadmin') ? 'selected' : '' ?>>Superadmin</option>
+                    <option value="user" <?= (isset($user) && $user->role == 'user') ? 'selected' : '' ?>>User</option>
+                    <option value="admin" <?= (isset($user) && $user->role == 'admin') ? 'selected' : '' ?>>Admin</option>
+                    <option value="superadmin" <?= (isset($user) && $user->role == 'superadmin') ? 'selected' : '' ?>>Superadmin</option>
                 </select>
             </div>
             <div class="mb-3">
                 <label>Password</label>
                 <input type="password" name="password" class="form-control">
+                <small class="text-muted">Kosongkan jika tidak ingin mengubah password (untuk edit)</small>
+
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" name="is_active" class="form-check-input" <?= (isset($user) && $user->is_active) ? 'checked' : '' ?> id="is_active">

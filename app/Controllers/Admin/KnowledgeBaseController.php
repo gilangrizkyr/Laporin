@@ -105,7 +105,7 @@ class KnowledgeBaseController extends BaseController
     public function analytics()
     {
         $articles = $this->kbModel->orderBy('view_count', 'DESC')->findAll();
-        
+
         $stats = [
             'total_articles' => $this->kbModel->countAllResults(),
             'published' => $this->kbModel->where('is_published', 1)->countAllResults(false),

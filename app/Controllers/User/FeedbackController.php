@@ -26,7 +26,7 @@ class FeedbackController extends BaseController
     public function create($complaintId)
     {
         $userId = session()->get('user_id');
-        
+
         // Get complaint
         $complaint = $this->complaintModel
             ->select('complaints.*, applications.name as application_name')
@@ -36,26 +36,26 @@ class FeedbackController extends BaseController
 
         if (!$complaint) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Laporan tidak ditemukan');
+                ->with('error', 'Laporan tidak ditemukan');
         }
 
         // Check ownership
         if ($complaint->user_id != $userId) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Anda tidak memiliki akses ke laporan ini');
+                ->with('error', 'Anda tidak memiliki akses ke laporan ini');
         }
 
         // Check if complaint is resolved or closed
         if (!$complaint->isResolved() && !$complaint->isClosed()) {
             return redirect()->to('user/complaints/' . $complaintId)
-                           ->with('error', 'Feedback hanya dapat diberikan untuk laporan yang sudah diselesaikan');
+                ->with('error', 'Feedback hanya dapat diberikan untuk laporan yang sudah diselesaikan');
         }
 
         // Check if feedback already exists
         $existingFeedback = $this->feedbackModel->getFeedbackByComplaint($complaintId);
         if ($existingFeedback) {
             return redirect()->to('user/complaints/' . $complaintId)
-                           ->with('warning', 'Anda sudah memberikan feedback untuk laporan ini');
+                ->with('warning', 'Anda sudah memberikan feedback untuk laporan ini');
         }
 
         $data = [
@@ -73,25 +73,25 @@ class FeedbackController extends BaseController
     public function store($complaintId)
     {
         $userId = session()->get('user_id');
-        
+
         // Verify complaint
         $complaint = $this->complaintModel->find($complaintId);
-        
+
         if (!$complaint || $complaint->user_id != $userId) {
             return redirect()->to('user/complaints')
-                           ->with('error', 'Tidak dapat memberikan feedback');
+                ->with('error', 'Tidak dapat memberikan feedback');
         }
 
         if (!$complaint->isResolved() && !$complaint->isClosed()) {
             return redirect()->to('user/complaints/' . $complaintId)
-                           ->with('error', 'Feedback hanya dapat diberikan untuk laporan yang sudah diselesaikan');
+                ->with('error', 'Feedback hanya dapat diberikan untuk laporan yang sudah diselesaikan');
         }
 
         // Check if feedback already exists
         $existingFeedback = $this->feedbackModel->getFeedbackByComplaint($complaintId);
         if ($existingFeedback) {
             return redirect()->to('user/complaints/' . $complaintId)
-                           ->with('warning', 'Anda sudah memberikan feedback untuk laporan ini');
+                ->with('warning', 'Anda sudah memberikan feedback untuk laporan ini');
         }
 
         // Validate
@@ -102,8 +102,8 @@ class FeedbackController extends BaseController
 
         if (!$this->validate($rules)) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('errors', $this->validator->getErrors());
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
         // Insert feedback
@@ -118,8 +118,8 @@ class FeedbackController extends BaseController
 
         if (!$feedbackId) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Gagal menyimpan feedback. Silakan coba lagi.');
+                ->withInput()
+                ->with('error', 'Gagal menyimpan feedback. Silakan coba lagi.');
         }
 
         // Auto-close ticket after feedback
@@ -135,10 +135,12 @@ class FeedbackController extends BaseController
             'closed',
             'resolved',
             'closed',
-            'Laporan ditutup setelah user memberikan feedback (Rating: ' . $this->request->getPost('rating') . '/5)'
+            'Laporan ditutup setelah user memberikan feedback (Rating: ' . $this->request->getPost('rating') . '/5)',
+            session()->get('full_name'),
+            session()->get('email')
         );
 
         return redirect()->to('user/complaints/' . $complaintId)
-                       ->with('success', 'Terima kasih atas feedback Anda! Laporan telah ditutup.');
+            ->with('success', 'Terima kasih atas feedback Anda! Laporan telah ditutup.');
     }
 }

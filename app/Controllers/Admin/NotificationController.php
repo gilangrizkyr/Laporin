@@ -22,7 +22,7 @@ class NotificationController extends BaseController
             return $this->response->setJSON(['count' => 0]);
         }
 
-        $count = $this->model->getUnreadCount((int) $userId);
+        $count = $this->model->countUnread((int) $userId);
         return $this->response->setJSON(['count' => $count]);
     }
 
@@ -35,7 +35,9 @@ class NotificationController extends BaseController
         }
 
         $limit = (int) ($this->request->getGet('limit') ?? 10);
-        $notifications = $this->model->getRecentNotifications((int) $userId, $limit);
+        $notifications = $this->model->getNotificationsByUser((int) $userId, false);
+        $notifications = array_slice($notifications, 0, $limit); // ambil sesuai limit
+
 
         return $this->response->setJSON(['notifications' => $notifications]);
     }
@@ -49,9 +51,10 @@ class NotificationController extends BaseController
         }
 
         $notification = $this->model->find($id);
-        if (!$notification || $notification['user_id'] != $userId) {
+        if (!$notification || $notification->user_id != $userId) {
             return $this->response->setStatusCode(403)->setJSON(['error' => 'Forbidden']);
         }
+
 
         $this->model->markAsRead($id);
         return $this->response->setJSON(['success' => true]);
@@ -82,8 +85,8 @@ class NotificationController extends BaseController
 
         try {
             $notifications = $this->model->where('user_id', $userId)
-                                          ->orderBy('created_at', 'DESC')
-                                          ->paginate($perPage, 'default', $page);
+                ->orderBy('created_at', 'DESC')
+                ->paginate($perPage, 'default', $page);
             $pager = $this->model->pager;
         } catch (\Exception $e) {
             $notifications = [];

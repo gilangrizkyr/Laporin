@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h3>Knowledge Base Analytics</h3>
-        <p class="text-muted mb-0">View statistics and popular articles</p>
+        <p class="text-muted mb-0">Lihat statistik dan artikel populer</p>
     </div>
     <a href="<?= base_url('admin/knowledge-base') ?>" class="btn btn-outline-secondary btn-sm">Back to Articles</a>
 </div>
@@ -54,7 +54,7 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th style="width: 50px">#</th>
+                    <th style="width: 50px">No</th>
                     <th>Title</th>
                     <th style="width: 80px">Status</th>
                     <th style="width: 100px">Views</th>
@@ -62,9 +62,10 @@
                 </tr>
             </thead>
             <tbody>
+                <?php $no = 1; ?>
                 <?php foreach ($articles as $article): ?>
                     <tr>
-                        <td><?= $article->id ?></td>
+                        <td><?= $no++ ?></td>
                         <td>
                             <strong><?= esc($article->title) ?></strong>
                             <?php if (!empty($article->tags)): ?>
@@ -97,5 +98,6 @@
         <?php endif; ?>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>
