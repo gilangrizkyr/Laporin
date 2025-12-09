@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 08 Des 2025 pada 07.26
+-- Waktu pembuatan: 09 Des 2025 pada 12.02
 -- Versi server: 11.4.2-MariaDB-log
 -- Versi PHP: 8.3.10
 
@@ -45,14 +45,10 @@ CREATE TABLE `applications` (
 --
 
 INSERT INTO `applications` (`id`, `name`, `description`, `is_critical`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'SIMPEG (Sistem Informasi Kepegawaian)', 'Aplikasi untuk mengelola data kepegawaian, absensi, dan cuti pegawai', 1, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(2, 'E-Office (Surat Menyurat)', 'Aplikasi untuk pengelolaan surat masuk, surat keluar, dan disposisi', 1, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(3, 'SIMKEU (Sistem Informasi Keuangan)', 'Aplikasi pengelolaan keuangan, anggaran, dan pelaporan', 1, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(4, 'SIPBJ (Sistem Informasi Pengadaan Barang/Jasa)', 'Aplikasi untuk pengelolaan pengadaan dan inventaris barang', 0, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(5, 'E-Presensi', 'Aplikasi absensi online pegawai', 0, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(6, 'Website Instansi', 'Website resmi instansi untuk informasi publik', 0, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(7, 'Portal Pegawai', 'Portal self-service untuk pegawai', 0, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(8, 'SIMPEG Mobile', 'Aplikasi mobile SIMPEG untuk Android/iOS', 0, 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32');
+(10, 'Penilaian', '', 0, 1, '2025-12-09 05:42:18', '2025-12-09 11:56:14'),
+(11, 'Perjadin', '', 0, 1, '2025-12-09 05:42:27', '2025-12-09 11:56:21'),
+(12, 'Pengaduan', '', 0, 1, '2025-12-09 05:42:39', '2025-12-09 11:56:08'),
+(13, 'Sistem Statistik Tepadu', '', 0, 1, '2025-12-09 05:42:59', '2025-12-09 11:56:00');
 
 -- --------------------------------------------------------
 
@@ -71,17 +67,6 @@ CREATE TABLE `attachments` (
   `uploaded_by` int(11) UNSIGNED NOT NULL,
   `created_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `attachments`
---
-
-INSERT INTO `attachments` (`id`, `complaint_id`, `file_name`, `file_path`, `file_type`, `file_size`, `uploaded_by`, `created_at`) VALUES
-(1, 1, 'abstract-template-background-white-and-bright-blue-squares-overlapping-with-halftone-and-texture-free-vector.jpg', 'uploads/complaints/1765087721_693519e932fd8.jpg', 'image/jpeg', 75533, 3, '2025-12-07 06:08:41'),
-(2, 2, 'photo-1510987836583-e3fb9586c7b3.jpeg', 'uploads/complaints/1765095154_693536f255ef1.jpeg', 'image/jpeg', 413184, 3, '2025-12-07 08:12:34'),
-(3, 7, 'Screenshot 2025-12-07 192026.png', 'uploads/complaints/1765106436_69356304eaab3.png', 'image/png', 171961, 3, '2025-12-07 11:20:36'),
-(4, 8, 'Screenshot 2025-12-07 201029.png', 'uploads/complaints/1765109439_69356ebf2cb5a.png', 'image/png', 113003, 3, '2025-12-07 12:10:39'),
-(5, 9, 'Screenshot 2025-12-07 215822.png', 'uploads/complaints/1765115910_6935880671d83.png', 'image/png', 130167, 3, '2025-12-07 13:58:30');
 
 -- --------------------------------------------------------
 
@@ -135,26 +120,8 @@ CREATE TABLE `chats` (
 --
 
 INSERT INTO `chats` (`id`, `complaint_id`, `user_id`, `message`, `is_internal_note`, `created_at`) VALUES
-(1, 1, 3, 'Halo', 0, '2025-12-07 06:20:03'),
-(2, 1, 3, 'Apakah error nya sudah di tangani ?', 0, '2025-12-07 06:20:36'),
-(3, 1, 3, 'Makasih ya', 0, '2025-12-07 06:45:51'),
-(4, 2, 3, 'Apakah bisa di percepat dalam pengerjaan', 0, '2025-12-07 08:14:54'),
-(5, 1, 3, 'Tst', 0, '2025-12-07 09:25:45'),
-(6, 6, 5, 'Tolong diperbaiki', 0, '2025-12-07 10:21:28'),
-(7, 6, 2, 'Baik segera kita cek', 0, '2025-12-07 10:21:53'),
-(8, 6, 5, 'terima kasih', 0, '2025-12-07 10:22:41'),
-(9, 6, 2, 'Tst', 1, '2025-12-07 10:23:07'),
-(10, 6, 2, 'Silahkan di cek kembali', 0, '2025-12-07 10:23:55'),
-(11, 7, 3, 'Bisa tolong di percepat ?', 0, '2025-12-07 11:21:50'),
-(12, 7, 2, 'Silahkan di tunggu yakak', 0, '2025-12-07 11:22:17'),
-(13, 7, 2, 'silahan di cek kembali ya kak', 0, '2025-12-07 11:23:38'),
-(14, 8, 3, 'Apakah bisa di percepat dalam pengerjaan', 0, '2025-12-07 12:11:37'),
-(15, 8, 2, 'Akan kita cek terlebih dahulu', 0, '2025-12-07 12:11:54'),
-(16, 9, 3, 'Dipercepat', 0, '2025-12-07 14:09:52'),
-(17, 9, 2, 'segera kami cek', 0, '2025-12-07 14:10:13'),
-(18, 12, 4, 'hallo', 0, '2025-12-08 04:13:02'),
-(19, 14, 4, 'hallo', 0, '2025-12-08 04:15:00'),
-(20, 14, 2, 'check', 0, '2025-12-08 04:15:16');
+(32, 21, 7, 'Tolong di bantu arahannya', 0, '2025-12-09 11:58:25'),
+(33, 21, 2, 'Silahkan di cek kembali', 0, '2025-12-09 12:00:00');
 
 -- --------------------------------------------------------
 
@@ -185,21 +152,7 @@ CREATE TABLE `complaints` (
 --
 
 INSERT INTO `complaints` (`id`, `user_id`, `application_id`, `category_id`, `title`, `description`, `impact_type`, `priority`, `status`, `assigned_to`, `resolved_at`, `closed_at`, `created_at`, `updated_at`) VALUES
-(1, 3, 1, 1, 'Error saat login', 'bla bla bla bla', 'other', 'normal', 'closed', 2, '2025-12-07 14:40:59', '2025-12-07 06:42:45', '2025-12-07 06:08:40', '2025-12-07 06:42:45'),
-(2, 3, 6, 4, 'Error saat mengupload data', 'Jadi BLA BLA BLA BLA BLA BLA', 'specific_bug', 'normal', 'closed', 2, '2025-12-07 16:13:46', '2025-12-07 16:17:15', '2025-12-07 08:12:34', '2025-12-07 08:16:55'),
-(3, 5, 7, 5, 'Saran agar mempermudah kinjerja', 'Jadi BLABLABALBALBALBA', 'other', 'normal', 'closed', 2, '2025-12-07 17:23:23', '2025-12-07 10:31:54', '2025-12-07 09:18:04', '2025-12-07 10:31:54'),
-(4, 4, 2, 1, 'Tidak bisa Login', 'Jadi BLABLABLABLABLABLA', 'cannot_use', 'urgent', 'closed', 2, '2025-12-07 17:55:52', '2025-12-07 10:03:56', '2025-12-07 09:55:06', '2025-12-07 10:03:56'),
-(5, 3, 5, 4, 'Data Tidak bisa di Upload', 'Jadi BLABLABLABLABLA', 'specific_bug', 'urgent', 'closed', 2, '2025-12-07 10:15:32', '2025-12-07 10:15:41', '2025-12-07 10:12:32', '2025-12-07 10:28:11'),
-(6, 5, 2, 4, 'Tidak bisa upload data', 'Jadi BLABLABLABLABLABLA', 'specific_bug', 'important', 'closed', 2, '2025-12-07 10:23:38', '2025-12-07 10:24:22', '2025-12-07 10:20:43', '2025-12-07 10:24:22'),
-(7, 3, 2, 4, 'Error Login', 'jadi Blababla', 'cannot_use', 'urgent', 'closed', 2, '2025-12-07 11:23:26', '2025-12-07 11:24:23', '2025-12-07 11:20:36', '2025-12-07 11:24:23'),
-(8, 3, 5, 4, 'Data Error', 'Jadi BLABLABLA', 'specific_bug', 'normal', 'closed', 2, '2025-12-07 12:12:19', '2025-12-07 12:12:39', '2025-12-07 12:10:39', '2025-12-07 12:12:39'),
-(9, 3, 3, 5, 'Tidak bisa login', 'Jadi BLABLABLA', 'specific_bug', 'important', 'closed', 2, '2025-12-07 14:11:39', '2025-12-07 14:12:35', '2025-12-07 13:58:30', '2025-12-07 14:12:35'),
-(10, 4, 7, 5, 'Data Error', 'Jadi blablablabla', 'specific_bug', 'normal', 'pending', NULL, NULL, NULL, '2025-12-08 02:13:46', '2025-12-08 02:13:46'),
-(11, 4, 7, 5, 'Data Error', 'Jadi blablablabla', 'specific_bug', 'normal', 'pending', NULL, NULL, NULL, '2025-12-08 02:14:52', '2025-12-08 02:14:52'),
-(12, 4, 7, 5, 'Data Error', 'Jadi blablablabla', 'specific_bug', 'normal', 'closed', 2, '2025-12-08 04:11:41', '2025-12-08 04:12:40', '2025-12-08 02:14:54', '2025-12-08 04:12:40'),
-(13, 4, 7, 5, 'Data Error', 'Jadi blablablabla', 'specific_bug', 'normal', 'closed', 1, '2025-12-08 03:48:03', '2025-12-08 03:48:19', '2025-12-08 02:16:06', '2025-12-08 03:48:19'),
-(14, 4, 5, 1, 'aasasasasfewffdsfdsf3121r', 'aasasasassfwr32r23rdfdsf', 'cannot_use', 'important', 'closed', 2, '2025-12-08 06:19:43', '2025-12-08 06:20:03', '2025-12-08 04:10:03', '2025-12-08 06:20:03'),
-(15, 4, 2, 4, 'fdf4frfdsf2', 'ffe3rfrgygeg e', 'cannot_use', 'urgent', 'in_progress', 2, NULL, NULL, '2025-12-08 05:33:27', '2025-12-08 05:50:52');
+(21, 7, 13, 4, 'Gagal Mengapload Data', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, urna eget tincidunt tempus, augue tortor cursus sapien, eget molestie justo lorem sed nisl. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Integer dictum magna id velit efficitur, eu sagittis arcu feugiat. Donec at tortor nec magna facilisis malesuada. Mauris sodales justo eget mi efficitur, sed viverra urna mattis. Suspendisse potenti. Praesent euismod nisl in dapibus tristique, at fermentum neque dapibus.', 'specific_bug', 'normal', 'closed', 2, '2025-12-09 11:59:15', '2025-12-09 12:01:00', '2025-12-09 11:57:44', '2025-12-09 12:01:00');
 
 -- --------------------------------------------------------
 
@@ -226,51 +179,10 @@ CREATE TABLE `complaint_history` (
 --
 
 INSERT INTO `complaint_history` (`id`, `complaint_id`, `user_id`, `user_name`, `user_email`, `action`, `old_value`, `new_value`, `description`, `created_at`) VALUES
-(1, 1, 3, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: urgent', '2025-12-07 06:08:41'),
-(2, 1, 3, NULL, NULL, 'updated', NULL, NULL, 'Laporan diupdate oleh user', '2025-12-07 06:15:25'),
-(3, 1, 3, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-07 06:42:45'),
-(4, 2, 3, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: normal', '2025-12-07 08:12:34'),
-(5, 2, 3, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-07 08:16:55'),
-(6, 3, 5, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: normal', '2025-12-07 09:18:04'),
-(7, 3, 5, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 1/5)', '2025-12-07 09:24:09'),
-(8, 4, 4, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: urgent', '2025-12-07 09:55:06'),
-(9, 4, 4, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-07 10:03:56'),
-(10, 5, 3, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: normal', '2025-12-07 10:12:32'),
-(11, 5, 2, NULL, NULL, 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-07 10:13:08'),
-(12, 5, 2, NULL, NULL, 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-07 10:15:32'),
-(13, 5, 3, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-07 10:15:41'),
-(14, 6, 5, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: important', '2025-12-07 10:20:43'),
-(15, 6, 2, NULL, NULL, 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-07 10:21:06'),
-(16, 6, 2, NULL, NULL, 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-07 10:23:38'),
-(17, 6, 5, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 4/5)', '2025-12-07 10:24:22'),
-(18, 5, 2, NULL, NULL, 'priority_changed', 'normal', 'urgent', 'Prioritas diubah dari normal menjadi urgent oleh admin', '2025-12-07 10:28:11'),
-(19, 3, 2, NULL, NULL, 'status_changed', 'closed', 'pending', 'Status diubah dari closed menjadi pending', '2025-12-07 10:31:29'),
-(20, 3, 2, NULL, NULL, 'status_changed', 'pending', 'closed', 'Status diubah dari pending menjadi closed', '2025-12-07 10:31:54'),
-(21, 7, 3, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: urgent', '2025-12-07 11:20:36'),
-(22, 7, 2, NULL, NULL, 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-07 11:21:17'),
-(23, 7, 2, NULL, NULL, 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-07 11:23:26'),
-(24, 7, 3, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 4/5)', '2025-12-07 11:24:23'),
-(25, 8, 3, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: normal', '2025-12-07 12:10:39'),
-(26, 8, 2, NULL, NULL, 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-07 12:11:20'),
-(27, 8, 2, NULL, NULL, 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-07 12:12:19'),
-(28, 8, 3, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-07 12:12:39'),
-(29, 9, 3, NULL, NULL, 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: important', '2025-12-07 13:58:30'),
-(30, 9, 2, NULL, NULL, 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-07 13:59:23'),
-(31, 9, 2, NULL, NULL, 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-07 14:11:39'),
-(32, 9, 3, NULL, NULL, 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-07 14:12:35'),
-(33, 13, 4, 'User Demo 2', 'user2@example.com', 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: normal', '2025-12-08 02:16:06'),
-(34, 13, 1, 'Super Administrator', 'superadmin@example.com', 'assigned', NULL, 'Super Administrator', 'Laporan ditugaskan ke Super Administrator', '2025-12-08 03:47:58'),
-(35, 13, 1, 'Super Administrator', 'superadmin@example.com', 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-08 03:48:03'),
-(36, 13, 4, 'User Demo 2', 'user2@example.com', 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-08 03:48:19'),
-(37, 14, 4, 'User Demo 2', 'user2@example.com', 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: important', '2025-12-08 04:10:03'),
-(38, 12, 2, 'Administrator', 'admin@example.com', 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-08 04:11:12'),
-(39, 12, 2, 'Administrator', 'admin@example.com', 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-08 04:11:41'),
-(40, 12, 4, 'User Demo 2', 'user2@example.com', 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 4/5)', '2025-12-08 04:12:40'),
-(41, 15, 4, 'User Demo 2', 'user2@example.com', 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: urgent', '2025-12-08 05:33:27'),
-(42, 15, 2, 'Administrator', 'admin@example.com', 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-08 05:50:52'),
-(43, 14, 2, 'Administrator', 'admin@example.com', 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-08 06:19:35'),
-(44, 14, 2, 'Administrator', 'admin@example.com', 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-08 06:19:44'),
-(45, 14, 2, 'Administrator', 'admin@example.com', 'status_changed', 'resolved', 'closed', 'Status diubah dari resolved menjadi closed', '2025-12-08 06:20:03');
+(69, 21, 7, 'Demo Account', 'demo@example.com', 'created', NULL, NULL, 'Laporan dibuat dengan prioritas: normal', '2025-12-09 11:57:45'),
+(70, 21, 2, 'Administrator', 'admin@example.com', 'assigned', NULL, 'Administrator', 'Laporan ditugaskan ke Administrator', '2025-12-09 11:58:57'),
+(71, 21, 2, 'Administrator', 'admin@example.com', 'status_changed', 'in_progress', 'resolved', 'Status diubah dari in_progress menjadi resolved', '2025-12-09 11:59:15'),
+(72, 21, 7, 'Demo Account', 'demo@example.com', 'closed', 'resolved', 'closed', 'Laporan ditutup setelah user memberikan feedback (Rating: 5/5)', '2025-12-09 12:01:00');
 
 -- --------------------------------------------------------
 
@@ -293,17 +205,7 @@ CREATE TABLE `feedbacks` (
 --
 
 INSERT INTO `feedbacks` (`id`, `complaint_id`, `user_id`, `rating`, `comment`, `created_at`) VALUES
-(1, 1, 3, 5, 'Keren', '2025-12-07 06:42:45'),
-(2, 2, 3, 5, 'Dapat di Andalkan\r\nAplikasi dapat berjalan dengan baik', '2025-12-07 08:16:55'),
-(3, 3, 5, 1, 'Terlalu Lama respon', '2025-12-07 09:24:09'),
-(4, 4, 4, 5, '', '2025-12-07 10:03:56'),
-(5, 5, 3, 5, '', '2025-12-07 10:15:41'),
-(6, 6, 5, 4, '', '2025-12-07 10:24:22'),
-(7, 7, 3, 4, 'Penanganan yang cepat', '2025-12-07 11:24:23'),
-(8, 8, 3, 5, 'Sangat Baik', '2025-12-07 12:12:39'),
-(9, 9, 3, 5, 'Sangat Baik\r\n', '2025-12-07 14:12:35'),
-(10, 13, 4, 5, '', '2025-12-08 03:48:19'),
-(11, 12, 4, 4, '', '2025-12-08 04:12:40');
+(16, 21, 7, 5, 'Menangani masalah dengan cepat', '2025-12-09 12:01:00');
 
 -- --------------------------------------------------------
 
@@ -393,79 +295,21 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_id`, `complaint_id`, `title`, `message`, `is_read`, `created_at`) VALUES
-(1, 2, 1, 'Laporan Baru', 'Laporan baru telah dibuat: Error saat login', 1, '2025-12-07 06:08:41'),
-(2, 1, 1, 'Laporan Baru', 'Laporan baru telah dibuat: Error saat login', 1, '2025-12-07 06:08:41'),
-(3, 2, 1, 'Pesan Baru dari User', 'User Demo 1 mengirim pesan pada laporan #1', 1, '2025-12-07 06:20:03'),
-(4, 1, 1, 'Pesan Baru dari User', 'User Demo 1 mengirim pesan pada laporan #1', 1, '2025-12-07 06:20:03'),
-(5, 2, 1, 'Pesan Baru dari User', 'User Demo 1 mengirim pesan pada laporan #1', 1, '2025-12-07 06:20:36'),
-(6, 1, 1, 'Pesan Baru dari User', 'User Demo 1 mengirim pesan pada laporan #1', 1, '2025-12-07 06:20:36'),
-(7, 2, 1, 'Pesan Baru', 'User Demo 1 mengirim pesan baru pada laporan Anda', 1, '2025-12-07 06:45:51'),
-(8, 2, 2, 'Laporan Baru', 'Laporan baru telah dibuat: Error saat mengupload data', 1, '2025-12-07 08:12:34'),
-(9, 1, 2, 'Laporan Baru', 'Laporan baru telah dibuat: Error saat mengupload data', 1, '2025-12-07 08:12:34'),
-(10, 2, 2, 'Pesan Baru', 'User Demo 1 mengirim pesan baru pada laporan Anda', 1, '2025-12-07 08:14:54'),
-(11, 2, 3, 'Laporan Baru', 'Laporan baru telah dibuat: Saran agar mempermudah kinjerja', 1, '2025-12-07 09:18:04'),
-(12, 1, 3, 'Laporan Baru', 'Laporan baru telah dibuat: Saran agar mempermudah kinjerja', 1, '2025-12-07 09:18:04'),
-(13, 2, 1, 'Pesan Baru', 'User Demo 1 mengirim pesan baru pada laporan Anda', 1, '2025-12-07 09:25:45'),
-(14, 2, 4, 'Laporan Baru', 'Laporan baru telah dibuat: Tidak bisa Login', 1, '2025-12-07 09:55:06'),
-(15, 1, 4, 'Laporan Baru', 'Laporan baru telah dibuat: Tidak bisa Login', 1, '2025-12-07 09:55:06'),
-(16, 2, 5, 'Laporan Baru', 'Laporan baru telah dibuat: Data Tidak bisa di Upload', 1, '2025-12-07 10:12:32'),
-(17, 1, 5, 'Laporan Baru', 'Laporan baru telah dibuat: Data Tidak bisa di Upload', 1, '2025-12-07 10:12:32'),
-(18, 3, 5, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-07 10:13:08'),
-(19, 3, 5, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-07 10:15:32'),
-(20, 3, 5, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-07 10:15:32'),
-(21, 2, 6, 'Laporan Baru', 'Laporan baru telah dibuat: Tidak bisa upload data', 1, '2025-12-07 10:20:43'),
-(22, 1, 6, 'Laporan Baru', 'Laporan baru telah dibuat: Tidak bisa upload data', 1, '2025-12-07 10:20:43'),
-(23, 5, 6, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-07 10:21:06'),
-(24, 2, 6, 'Pesan Baru', 'Users Demo mengirim pesan baru pada laporan Anda', 1, '2025-12-07 10:21:28'),
-(25, 5, 6, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-07 10:21:53'),
-(26, 2, 6, 'Pesan Baru', 'Users Demo mengirim pesan baru pada laporan Anda', 1, '2025-12-07 10:22:41'),
-(27, 5, 6, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-07 10:23:38'),
-(28, 5, 6, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-07 10:23:38'),
-(29, 5, 6, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-07 10:23:55'),
-(30, 5, 3, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Ditutup menjadi Pending', 0, '2025-12-07 10:31:29'),
-(31, 5, 3, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Pending menjadi Ditutup', 0, '2025-12-07 10:31:54'),
-(32, 2, 7, 'Laporan Baru', 'Laporan baru telah dibuat: Error Login', 1, '2025-12-07 11:20:36'),
-(33, 1, 7, 'Laporan Baru', 'Laporan baru telah dibuat: Error Login', 1, '2025-12-07 11:20:36'),
-(34, 3, 7, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-07 11:21:17'),
-(35, 2, 7, 'Pesan Baru', 'User Demo 1 mengirim pesan baru pada laporan Anda', 1, '2025-12-07 11:21:50'),
-(36, 3, 7, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-07 11:22:17'),
-(37, 3, 7, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-07 11:23:26'),
-(38, 3, 7, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-07 11:23:26'),
-(39, 3, 7, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-07 11:23:38'),
-(40, 2, 8, 'Laporan Baru', 'Laporan baru telah dibuat: Data Error', 1, '2025-12-07 12:10:39'),
-(41, 1, 8, 'Laporan Baru', 'Laporan baru telah dibuat: Data Error', 1, '2025-12-07 12:10:39'),
-(42, 3, 8, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-07 12:11:20'),
-(43, 2, 8, 'Pesan Baru', 'User Demo 1 mengirim pesan baru pada laporan Anda', 1, '2025-12-07 12:11:37'),
-(44, 3, 8, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-07 12:11:54'),
-(45, 3, 8, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-07 12:12:19'),
-(46, 3, 8, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-07 12:12:19'),
-(47, 2, 9, 'Laporan Baru', 'Laporan baru telah dibuat: Tidak bisa login', 1, '2025-12-07 13:58:30'),
-(49, 3, 9, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-07 13:59:23'),
-(50, 2, 9, 'Pesan Baru', 'User Demo 1 mengirim pesan baru pada laporan Anda', 1, '2025-12-07 14:09:52'),
-(51, 3, 9, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-07 14:10:13'),
-(52, 3, 9, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-07 14:11:39'),
-(53, 3, 9, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-07 14:11:39'),
 (54, 2, NULL, 'Laporan Baru', 'Laporan baru telah dibuat: Data Error', 1, '2025-12-08 02:16:06'),
 (55, 1, NULL, 'Laporan Baru', 'Laporan baru telah dibuat: Data Error', 1, '2025-12-08 02:16:06'),
-(56, 4, NULL, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Super Administrator', 0, '2025-12-08 03:47:58'),
-(57, 4, NULL, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-08 03:48:03'),
-(58, 4, NULL, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-08 03:48:03'),
 (59, 2, NULL, 'Laporan Baru', 'Laporan baru telah dibuat: aasasasasfewffdsfdsf3121r', 1, '2025-12-08 04:10:03'),
 (60, 1, NULL, 'Laporan Baru', 'Laporan baru telah dibuat: aasasasasfewffdsfdsf3121r', 1, '2025-12-08 04:10:03'),
-(61, 4, NULL, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-08 04:11:12'),
-(62, 4, NULL, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-08 04:11:41'),
-(63, 4, NULL, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-08 04:11:41'),
 (64, 2, NULL, 'Pesan Baru', 'User Demo 2 mengirim pesan baru pada laporan Anda', 1, '2025-12-08 04:13:02'),
 (65, 2, NULL, 'Pesan Baru dari User', 'User Demo 2 mengirim pesan pada laporan #14', 1, '2025-12-08 04:15:00'),
 (66, 1, NULL, 'Pesan Baru dari User', 'User Demo 2 mengirim pesan pada laporan #14', 1, '2025-12-08 04:15:00'),
-(67, 4, NULL, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-08 04:15:16'),
-(68, 2, 15, 'Laporan Baru', 'Laporan baru telah dibuat: fdf4frfdsf2', 1, '2025-12-08 05:33:27'),
-(69, 1, 15, 'Laporan Baru', 'Laporan baru telah dibuat: fdf4frfdsf2', 1, '2025-12-08 05:33:27'),
-(70, 4, 15, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-08 05:50:52'),
-(71, 4, 14, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-08 06:19:35'),
-(72, 4, 14, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-08 06:19:44'),
-(73, 4, 14, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-08 06:19:44'),
-(74, 4, 14, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Selesai menjadi Ditutup', 0, '2025-12-08 06:20:03');
+(118, 2, 21, 'Laporan Baru', 'Laporan baru telah dibuat: Gagal Mengapload Data', 0, '2025-12-09 11:57:45'),
+(119, 1, 21, 'Laporan Baru', 'Laporan baru telah dibuat: Gagal Mengapload Data', 0, '2025-12-09 11:57:45'),
+(120, 2, 21, 'Pesan Baru dari User', 'Demo Account mengirim pesan pada laporan #21', 0, '2025-12-09 11:58:25'),
+(121, 1, 21, 'Pesan Baru dari User', 'Demo Account mengirim pesan pada laporan #21', 0, '2025-12-09 11:58:25'),
+(122, 7, 21, 'Laporan Ditangani', 'Laporan Anda sedang ditangani oleh Administrator', 0, '2025-12-09 11:58:57'),
+(123, 7, 21, 'Status Laporan Berubah', 'Status laporan Anda berubah dari Sedang Diproses menjadi Selesai', 0, '2025-12-09 11:59:15'),
+(124, 7, 21, 'Laporan Selesai', 'Laporan Anda telah diselesaikan. Silakan berikan feedback.', 0, '2025-12-09 11:59:15'),
+(125, 7, 21, 'Pesan Baru', 'Administrator mengirim pesan baru pada laporan Anda', 0, '2025-12-09 12:00:00');
 
 -- --------------------------------------------------------
 
@@ -530,9 +374,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `full_name`, `role`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'superadmin', 'superadmin@example.com', '$2y$10$QVmg2FwnI0tbnNRmiTZaeuVq7VOMcCMu1mnX82Y7eiLYlfOixoEX6', 'Super Administrator', 'superadmin', 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
 (2, 'admin', 'admin@example.com', '$2y$10$DLfQ7/Ef.PCtUMvt8Tl89OtgIDWSVjf8aIHwE2hQJRSrXFBGeiis2', 'Administrator', 'admin', 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(3, 'user1', 'user1@example.com', '$2y$10$h5BfZ16Up6Pe5C/0Ep5hUeNU8a4S2Lj56nu9awTd4MmBAOeuWJC.6', 'User Demo 1', 'user', 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(4, 'user2', 'user2@example.com', '$2y$10$7l1C6i8Ncqdw1U4n5pewTuI1wADiUTT3T1Hov5aBVKGk3NmV3CUrG', 'User Demo 2', 'user', 1, '2025-12-06 19:05:32', '2025-12-06 19:05:32'),
-(5, 'users2', 'users2@gmail.com', '$2y$10$roPs6pSR4t8RfzsQnXySEOwyj0120kCWqXKgu6b.82r2J9LxPtrUm', 'Users Demo', 'user', 1, '2025-12-07 09:13:54', '2025-12-07 09:13:54');
+(7, 'Demo', 'demo@example.com', '$2y$10$53Rv1ylbN4pz5EkcuU31JOloQ9pRjPTnoj4I1mkaDVftb/mJHxgCS', 'Demo Account', 'user', 1, '2025-12-09 11:54:40', '2025-12-09 11:54:40');
 
 --
 -- Indexes for dumped tables
@@ -644,7 +486,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `applications`
 --
 ALTER TABLE `applications`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT untuk tabel `attachments`
@@ -662,25 +504,25 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT untuk tabel `chats`
 --
 ALTER TABLE `chats`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT untuk tabel `complaints`
 --
 ALTER TABLE `complaints`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT untuk tabel `complaint_history`
 --
 ALTER TABLE `complaint_history`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT untuk tabel `feedbacks`
 --
 ALTER TABLE `feedbacks`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT untuk tabel `knowledge_base`
@@ -698,7 +540,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT untuk tabel `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT untuk tabel `search_history`
@@ -710,7 +552,7 @@ ALTER TABLE `search_history`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)

@@ -34,7 +34,7 @@
 <!-- Statistics Section -->
 <section class="container mb-5">
     <div class="text-center mb-5">
-        <h2>Statistik Pengaduan</h2>
+        <h2>Data Pengaduan</h2>
         <p class="text-muted">Data real-time sistem pengaduan</p>
     </div>
     <div class="row">
@@ -126,7 +126,7 @@
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="card-title mb-2">
-                                        <span class="badge bg-secondary me-2">#<?= $complaint->id ?></span>
+                                        <!-- <span class="badge bg-secondary me-2">#<?= $complaint->id ?></span> -->
                                         <?= esc($complaint->title) ?>
                                     </h5>
                                     <p class="text-muted mb-2">
