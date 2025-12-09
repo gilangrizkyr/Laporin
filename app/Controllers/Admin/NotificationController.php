@@ -34,12 +34,24 @@ class NotificationController extends BaseController
             return $this->response->setJSON(['notifications' => []]);
         }
 
-        $limit = (int) ($this->request->getGet('limit') ?? 10);
+        $limit = (int) ($this->request->getGet('limit') ?? 5);
         $notifications = $this->model->getNotificationsByUser((int) $userId, false);
-        $notifications = array_slice($notifications, 0, $limit); // ambil sesuai limit
+        $notifications = array_slice($notifications, 0, $limit);
 
+        // Convert to array for JSON
+        $notifArray = [];
+        foreach ($notifications as $notif) {
+            $notifArray[] = [
+                'id' => $notif->id,
+                'title' => $notif->title,
+                'message' => $notif->message,
+                'complaint_id' => $notif->complaint_id,
+                'is_read' => $notif->is_read,
+                'created_at' => $notif->created_at,
+            ];
+        }
 
-        return $this->response->setJSON(['notifications' => $notifications]);
+        return $this->response->setJSON(['notifications' => $notifArray]);
     }
 
     // Mark notification as read (AJAX)
@@ -54,7 +66,6 @@ class NotificationController extends BaseController
         if (!$notification || $notification->user_id != $userId) {
             return $this->response->setStatusCode(403)->setJSON(['error' => 'Forbidden']);
         }
-
 
         $this->model->markAsRead($id);
         return $this->response->setJSON(['success' => true]);
@@ -77,7 +88,7 @@ class NotificationController extends BaseController
     {
         $userId = session()->get('user_id');
         if (!$userId) {
-            return redirect()->to(route_to('login'));
+            return redirect()->to('auth/login');
         }
 
         $page = (int) ($this->request->getGet('page') ?? 1);
@@ -94,7 +105,8 @@ class NotificationController extends BaseController
         }
 
         return view('admin/notifications/list', [
-            'title' => 'Notifications',
+            'title' => 'Notifikasi',
+            'page_title' => 'Notifikasi',
             'notifications' => $notifications,
             'pager' => $pager,
         ]);
@@ -109,7 +121,7 @@ class NotificationController extends BaseController
         }
 
         $notification = $this->model->find($id);
-        if (!$notification || $notification['user_id'] != $userId) {
+        if (!$notification || $notification->user_id != $userId) {
             return $this->response->setStatusCode(403)->setJSON(['error' => 'Forbidden']);
         }
 

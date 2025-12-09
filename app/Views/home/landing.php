@@ -8,7 +8,7 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <h1>Laporkan Kendala Aplikasi dengan Mudah</h1>
-                <p>Sistem pengaduan terintegrasi untuk melaporkan error, bug, dan kendala pada aplikasi internal DPMPTSP Tanah Bumbu.</p>
+                <p>Sistem pengaduan terintegrasi untuk melaporkan error, bug, dan kendala pada aplikasi.</p>
                 <div class="d-flex gap-3">
                     <?php if (session()->has('user_id')): ?>
                         <a href="<?= base_url(session()->get('role') . '/dashboard') ?>" class="btn btn-light btn-custom">

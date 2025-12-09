@@ -20,7 +20,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <h5 class="mb-2">
-                            <span class="badge bg-secondary">#<?= $complaint->id ?></span>
+                            <span class="badge bg-secondary">No. <?= $complaint->id ?></span>
                             <?= esc($complaint->title) ?>
                         </h5>
                         <div class="d-flex gap-2">

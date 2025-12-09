@@ -123,13 +123,21 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
     $routes->post('knowledge-base/(:num)/update', 'KnowledgeBaseController::update/$1', ['as' => 'admin.kb.update']);
     $routes->delete('knowledge-base/(:num)', 'KnowledgeBaseController::delete/$1', ['as' => 'admin.kb.delete']);
 
-    // Notifications
-    $routes->get('notifications', 'NotificationController::index', ['as' => 'admin.notifications']);
-    $routes->get('notifications/api/count', 'NotificationController::getUnreadCount', ['as' => 'admin.notifications.count']);
-    $routes->get('notifications/api/recent', 'NotificationController::getRecent', ['as' => 'admin.notifications.recent']);
-    $routes->post('notifications/(:num)/read', 'NotificationController::markRead/$1', ['as' => 'admin.notifications.read']);
-    $routes->post('notifications/read-all', 'NotificationController::markAllRead', ['as' => 'admin.notifications.readAll']);
-    $routes->delete('notifications/(:num)', 'NotificationController::delete/$1', ['as' => 'admin.notifications.delete']);
+    // // Notifications
+    // $routes->get('notifications', 'NotificationController::index', ['as' => 'admin.notifications']);
+    // $routes->get('notifications/api/count', 'NotificationController::getUnreadCount', ['as' => 'admin.notifications.count']);
+    // $routes->get('notifications/api/recent', 'NotificationController::getRecent', ['as' => 'admin.notifications.recent']);
+    // $routes->post('notifications/(:num)/read', 'NotificationController::markRead/$1', ['as' => 'admin.notifications.read']);
+    // $routes->post('notifications/read-all', 'NotificationController::markAllRead', ['as' => 'admin.notifications.readAll']);
+    // $routes->delete('notifications/(:num)', 'NotificationController::delete/$1', ['as' => 'admin.notifications.delete']);
+
+    // Notification routes
+    $routes->get('notifications', 'NotificationController::index');
+    $routes->get('notifications/unread-count', 'NotificationController::getUnreadCount');
+    $routes->get('notifications/recent', 'NotificationController::getRecent');
+    $routes->post('notifications/(:num)/read', 'NotificationController::markRead/$1');
+    $routes->post('notifications/read-all', 'NotificationController::markAllRead');
+    $routes->delete('notifications/(:num)', 'NotificationController::delete/$1');
 });
 
 // ========== SUPERADMIN ROUTES (Auth Required, Role: superadmin only) ========== //

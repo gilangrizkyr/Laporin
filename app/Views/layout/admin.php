@@ -13,6 +13,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script src="<?= base_url('assets/js/notifications.js') ?>"></script>
+
     <style>
         :root {
             --sidebar-width: 260px;
@@ -197,7 +199,8 @@
     </style>
 </head>
 
-<body>
+<body data-user-role="<?= session()->get('role') ?>">
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -302,25 +305,25 @@
             <div class="topbar-user">
                 <!-- Notifications -->
                 <div class="dropdown">
-                    <a href="#" class="text-dark notification-badge" id="notifBadge" data-bs-toggle="dropdown" role="button">
+                    <a href="#" class="text-dark notification-badge" data-bs-toggle="dropdown" id="notificationDropdown">
                         <i class="fas fa-bell fa-lg"></i>
                         <span class="badge bg-danger" id="notifCount">0</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" id="notifDropdown" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
+                    <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
                         <li>
-                            <h6 class="dropdown-header">Notifikasi</h6>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li id="notifList" style="min-height: 100px;">
-                            <p class="dropdown-item-text text-muted text-center py-3">Memuat...</p>
+                            <h6 class="dropdown-header d-flex justify-content-between align-items-center">
+                                Notifikasi
+                                <a href="<?= base_url('admin/notifications') ?>" class="btn btn-sm btn-link">Lihat Semua</a>
+                            </h6>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item text-center" href="<?= base_url('admin/notifications') ?>">Lihat Semua</a></li>
-                        <li><a class="dropdown-item text-center text-secondary" href="#" onclick="markAllAsReadNotif(event)">Tandai Semua</a></li>
+                        <div id="notificationList">
+                            <li class="text-center py-3">
+                                <small class="text-muted">Loading...</small>
+                            </li>
+                        </div>
                     </ul>
                 </div>
 
@@ -394,7 +397,7 @@
 
         // Load notification count and list
         function loadNotifications() {
-            fetch('<?= base_url('admin/notifications/api/count') ?>')
+            fetch('<?= base_url('admin/notifications/unread-count') ?>')
                 .then(r => r.json())
                 .then(data => {
                     const countEl = document.getElementById('notifCount');
@@ -406,10 +409,13 @@
                     }
                 });
 
-            fetch('<?= base_url('admin/notifications/api/recent') ?>?limit=5')
+            fetch('<?= base_url('admin/notifications/recent?limit=5') ?>')
+
+
                 .then(r => r.json())
                 .then(data => {
-                    const listEl = document.getElementById('notifList');
+                    const listEl = document.getElementById('notificationList');
+
                     if (!data.notifications || data.notifications.length === 0) {
                         listEl.innerHTML = '<p class="dropdown-item-text text-muted text-center py-3">Tidak ada notifikasi</p>';
                         return;
@@ -505,6 +511,10 @@
     <?= $this->renderSection('scripts') ?>
     <!-- Custom JS -->
     <script src="<?= base_url('assets/js/app.js') ?>"></script>
+    <script>
+        // Set user role for notification redirect
+        document.body.dataset.userRole = '<?= session()->get('role') ?>';
+    </script>
 </body>
 
 </html>

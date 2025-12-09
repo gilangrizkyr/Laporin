@@ -110,7 +110,7 @@
                         <a class="nav-link" href="<?= base_url('/') ?>">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('knowledge-base') ?>">Knowledge Base</a>
+                        <a class="nav-link" href="<?= base_url('knowledge-base') ?>">Basis Pengetahuan</a>
                     </li>
                     <?php if (session()->has('user_id')): ?>
                         <li class="nav-item">

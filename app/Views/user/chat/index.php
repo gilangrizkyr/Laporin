@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMessages();
     
     // Auto refresh every 5 seconds
-    autoRefreshInterval = setInterval(loadMessages, 100000);
+    autoRefreshInterval = setInterval(loadMessages, 1000);
 });
 
 // Load chat messages

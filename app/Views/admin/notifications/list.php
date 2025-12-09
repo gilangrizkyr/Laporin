@@ -1,57 +1,124 @@
 <?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
+
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<?= base_url('admin/dashboard') ?>">Dashboard</a></li>
+        <li class="breadcrumb-item active">Notifikasi</li>
+    </ol>
+</nav>
+
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Notifikasi</h5>
-        <button class="btn btn-sm btn-outline-secondary" onclick="markAllAsRead()" id="markAllBtn">Mark All as Read</button>
+        <h5 class="mb-0">
+            <i class="fas fa-bell"></i> Notifikasi
+        </h5>
+        <?php if (!empty($notifications)): ?>
+            <button class="btn btn-sm btn-outline-secondary" onclick="markAllAsRead()" id="markAllBtn">
+                <i class="fas fa-check-double"></i> Tandai Semua Dibaca
+            </button>
+        <?php endif; ?>
     </div>
-    <div class="card-body">
+    <div class="card-body p-0">
         <?php if (empty($notifications)): ?>
-            <p class="text-muted text-center">Tidak ada notifikasi</p>
+            <div class="text-center py-5">
+                <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Tidak ada notifikasi</p>
+            </div>
         <?php else: ?>
-            <div class="list-group">
+            <div class="list-group list-group-flush">
                 <?php foreach ($notifications as $notif): ?>
-                    <div class="list-group-item">
+                    <div class="list-group-item list-group-item-action <?= !$notif->is_read ? 'bg-light' : '' ?>"
+                        style="cursor: pointer; transition: all 0.3s;"
+                        onclick="handleNotificationClick(
+                  <?= $notif->id ?>, 
+                        <?= $notif->complaint_id !== null ? $notif->complaint_id : 'null' ?>, 
+                    '<?= session()->get('role') ?>'
+                        )"
                         <div class="d-flex w-100 justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <?= esc($notif->title) ?>
-                                    <?php if (!$notif->is_read): ?>
-                                        <span class="badge bg-primary">New</span>
-                                    <?php endif; ?>
-                                </h6>
-                                <p class="mb-1 text-muted"><?= esc($notif->message) ?></p>
-                                <small class="text-muted"><?= date('Y-m-d H:i', strtotime($notif->created_at)) ?></small>
-                            </div>
-                            <div class="ms-2">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
                                 <?php if (!$notif->is_read): ?>
-                                    <button class="btn btn-sm btn-light" onclick="markAsRead(<?= $notif->id ?>)">Mark as read</button>
+                                    <span class="badge bg-primary me-2">Baru</span>
                                 <?php endif; ?>
-                                <button class="btn btn-sm btn-danger" onclick="deleteNotif(<?= $notif->id ?>)">Delete</button>  
+                                <h6 class="mb-0">
+                                    <i class="fas fa-<?= $notif->complaint_id ? 'clipboard-list' : 'info-circle' ?>"></i>
+                                    <?= esc($notif->title) ?>
+                                </h6>
+                            </div>
+                            <p class="mb-2 text-muted"><?= esc($notif->message) ?></p>
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i>
+                                <?= $notif->getTimeDiff() ?>
+                            </small>
+                        </div>
+                        <div class="ms-3" onclick="event.stopPropagation();">
+                            <div class="btn-group btn-group-sm">
+                                <?php if (!$notif->is_read): ?>
+                                    <button class="btn btn-outline-primary"
+                                        onclick="markAsRead(<?= $notif->id ?>)"
+                                        title="Tandai Dibaca">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                <?php endif; ?>
+                                <button class="btn btn-outline-danger"
+                                    onclick="deleteNotif(<?= $notif->id ?>)"
+                                    title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
             </div>
-
-            <?php if (isset($pager) && $pager): ?>
-                <div class="mt-3">
-                    <?= $pager->links() ?>
-                </div>
-            <?php endif; ?>
-        <?php endif; ?>
+        <?php endforeach; ?>
     </div>
+
+    <?php if (isset($pager) && $pager): ?>
+        <div class="p-3">
+            <?= $pager->links() ?>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
 </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
+    // Handle notification click - redirect to complaint detail
+    function handleNotificationClick(notifId, complaintId, role) {
+        // Mark as read first
+        fetch('<?= base_url('admin/notifications') ?>/' + notifId + '/read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(() => {
+            // Redirect based on role and complaint_id
+            if (complaintId) {
+                if (role === 'admin' || role === 'superadmin') {
+                    window.location.href = '<?= base_url('admin/complaints') ?>/' + complaintId;
+                } else {
+                    window.location.href = '<?= base_url('user/complaints') ?>/' + complaintId;
+                }
+            } else {
+                // If no complaint_id, just reload to update read status
+                location.reload();
+            }
+        });
+    }
+
     function markAsRead(id) {
+        event.stopPropagation();
+
         fetch('<?= base_url('admin/notifications') ?>/' + id + '/read', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(r => r.json())
@@ -60,14 +127,20 @@
                     location.reload();
                 }
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.error(e);
+                alert('Gagal menandai notifikasi');
+            });
     }
 
     function markAllAsRead() {
+        if (!confirm('Tandai semua notifikasi sebagai dibaca?')) return;
+
         fetch('<?= base_url('admin/notifications/read-all') ?>', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(r => r.json())
@@ -76,15 +149,22 @@
                     location.reload();
                 }
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.error(e);
+                alert('Gagal menandai semua notifikasi');
+            });
     }
 
     function deleteNotif(id) {
-        if (!confirm('Delete this notification?')) return;
+        event.stopPropagation();
+
+        if (!confirm('Hapus notifikasi ini?')) return;
+
         fetch('<?= base_url('admin/notifications') ?>/' + id, {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(r => r.json())
@@ -93,7 +173,10 @@
                     location.reload();
                 }
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.error(e);
+                alert('Gagal menghapus notifikasi');
+            });
     }
 </script>
 <?= $this->endSection() ?>
