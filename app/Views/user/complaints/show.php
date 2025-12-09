@@ -279,7 +279,7 @@
 <script>
     function confirmDelete(id) {
         const form = document.getElementById('deleteForm');
-        form.action = '<?= base_url('user/complaints/') ?>' + id;
+        form.action = '<?= base_url('user/delete/') ?>' + id;
 
         const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
         modal.show();

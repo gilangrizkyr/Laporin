@@ -20,7 +20,7 @@
             </button>
         <?php endif; ?>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body p-0"> 
         <?php if (empty($notifications)): ?>
             <div class="text-center py-5">
                 <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
