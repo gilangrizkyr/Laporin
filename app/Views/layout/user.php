@@ -1,28 +1,24 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title ?? 'Dashboard User') ?> - Sistem Pengaduan</title>
-    <!-- Custom CSS -->
-<link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>">
-    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
             --sidebar-width: 250px;
             --primary-color: #4CAF50;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f8f9fa;
         }
-        
+
         /* Sidebar */
         .sidebar {
             position: fixed;
@@ -36,65 +32,65 @@
             z-index: 1000;
             transition: all 0.3s;
         }
-        
+
         .sidebar-header {
             padding: 20px;
-            background: rgba(0,0,0,0.1);
+            background: rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-        
+
         .sidebar-header h4 {
             margin: 0;
             font-size: 1.3rem;
         }
-        
+
         .sidebar-menu {
             padding: 20px 0;
         }
-        
+
         .sidebar-menu a {
             display: flex;
             align-items: center;
             padding: 12px 20px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: all 0.3s;
         }
-        
+
         .sidebar-menu a:hover,
         .sidebar-menu a.active {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
             padding-left: 25px;
         }
-        
+
         .sidebar-menu a i {
             width: 25px;
             margin-right: 10px;
         }
-        
+
         /* Main Content */
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
         }
-        
+
         /* Topbar */
         .topbar {
             background: white;
             padding: 15px 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .topbar-user {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -106,27 +102,27 @@
             justify-content: center;
             font-weight: bold;
         }
-        
+
         /* Content Area */
         .content-area {
             padding: 30px;
         }
-        
+
         /* Card Custom */
         .card {
             border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border-radius: 10px;
             margin-bottom: 30px;
         }
-        
+
         .card-header {
             background: white;
             border-bottom: 2px solid #f0f0f0;
             padding: 15px 20px;
             font-weight: 600;
         }
-        
+
         /* Stat Card */
         .stat-card {
             padding: 20px;
@@ -134,62 +130,63 @@
             color: white;
             transition: transform 0.3s;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-5px);
         }
-        
+
         .stat-card .stat-icon {
             font-size: 2.5rem;
             opacity: 0.8;
         }
-        
+
         .stat-card .stat-number {
             font-size: 2rem;
             font-weight: bold;
             margin: 10px 0;
         }
-        
+
         .stat-card .stat-label {
             font-size: 0.9rem;
             opacity: 0.9;
         }
-        
+
         /* Notification Badge */
         .notification-badge {
             position: relative;
         }
-        
+
         .notification-badge .badge {
             position: absolute;
             top: -5px;
             right: -5px;
         }
-        
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 left: calc(var(--sidebar-width) * -1);
             }
-            
+
             .sidebar.show {
                 left: 0;
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
-            
+
             .mobile-menu-btn {
                 display: block !important;
             }
         }
-        
+
         .mobile-menu-btn {
             display: none;
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
@@ -198,7 +195,7 @@
             <h4>Sistem Pengaduan</h4>
             <small>User Panel</small>
         </div>
-        
+
         <div class="sidebar-menu">
             <a href="<?= base_url('user/dashboard') ?>" class="<?= uri_string() == 'user/dashboard' ? 'active' : '' ?>">
                 <i class="fas fa-home"></i>
@@ -216,9 +213,9 @@
                 <i class="fas fa-book"></i>
                 <span>Knowledge Base</span>
             </a>
-            
+
             <hr style="border-color: rgba(255,255,255,0.2); margin: 20px;">
-            
+
             <a href="<?= base_url('/') ?>">
                 <i class="fas fa-globe"></i>
                 <span>Beranda</span>
@@ -229,7 +226,7 @@
             </a>
         </div>
     </div>
-    
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Topbar -->
@@ -240,7 +237,7 @@
                 </button>
                 <h5 class="d-inline-block mb-0 ms-2"><?= esc($page_title ?? 'Dashboard') ?></h5>
             </div>
-            
+
             <div class="topbar-user">
                 <!-- Notifications -->
                 <div class="dropdown">
@@ -249,12 +246,16 @@
                         <span class="badge bg-danger" id="notifCount">0</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
-                        <li><h6 class="dropdown-header">Notifikasi</h6></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <h6 class="dropdown-header">Notifikasi</h6>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item text-center" href="<?= base_url('user/notifications') ?>">Lihat Semua</a></li>
                     </ul>
                 </div>
-                
+
                 <!-- User Menu -->
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none" data-bs-toggle="dropdown">
@@ -269,15 +270,17 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profile</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item text-danger" href="<?= base_url('auth/logout') ?>">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a></li>
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a></li>
                     </ul>
                 </div>
             </div>
         </div>
-        
+
         <!-- Content Area -->
         <div class="content-area">
             <!-- Flash Messages -->
@@ -288,7 +291,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
-            
+
             <?php if (session()->getFlashdata('error')): ?>
                 <div class="alert alert-danger alert-dismissible fade show">
                     <i class="fas fa-exclamation-circle"></i>
@@ -296,7 +299,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
-            
+
             <?php if (session()->getFlashdata('warning')): ?>
                 <div class="alert alert-warning alert-dismissible fade show">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -304,29 +307,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
-            
+
             <!-- Main Content -->
             <?= $this->renderSection('content') ?>
         </div>
     </div>
-    
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Custom JS -->
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show');
         }
-        
+
         // Load notification count
         // TODO: Implement AJAX call to get unread notifications
         // For now, set to 0
         document.getElementById('notifCount').textContent = '0';
     </script>
-    
+
     <?= $this->renderSection('scripts') ?>
     <!-- Custom JS -->
-<script src="<?= base_url('assets/js/app.js') ?>"></script>
+    <script src="<?= base_url('assets/js/app.js') ?>"></script>
 </body>
+
 </html>

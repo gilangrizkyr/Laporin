@@ -15,6 +15,11 @@
                 </div>
             <?php endif; ?>
             <div class="mb-3">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" value="<?= esc($user->username ?? old('username')) ?>">
+            </div>
+
+            <div class="mb-3">
                 <label>Full Name</label>
                 <input type="text" name="full_name" class="form-control" value="<?= esc($user->full_name ?? old('full_name')) ?>">
             </div>

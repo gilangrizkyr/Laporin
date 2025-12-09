@@ -30,9 +30,12 @@
                         <td><?= $u->is_active ? 'Yes' : 'No' ?></td>
                         <td>
                             <a href="<?= base_url('superadmin/users/' . $u->id . '/edit') ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                            <form action="<?= base_url('superadmin/users/' . $u->id . '/delete') ?>" method="post" style="display:inline-block" onsubmit="return confirm('Delete user?')">
+                            <form action="<?= route_to('superadmin.users.delete', $u->id) ?>" method="post" style="display:inline-block" onsubmit="return confirm('Delete user?')">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="_method" value="DELETE">
                                 <button class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
+
                         </td>
                     </tr>
                 <?php endforeach; ?>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers\Superadmin;
 
 use App\Controllers\BaseController;
@@ -67,6 +68,18 @@ class UserManagementController extends BaseController
         $data = $this->request->getPost();
         $data['is_active'] = isset($data['is_active']) ? 1 : 0;
 
+        // validasi email unik kecuali ID sendiri
+        $existingEmail = $this->userModel->where('email', $data['email'])->first();
+        if ($existingEmail && $existingEmail->id != $id) {
+            return redirect()->back()->withInput()->with('errors', ['Email sudah terdaftar']);
+        }
+
+        // validasi username unik kecuali ID sendiri
+        $existingUsername = $this->userModel->where('username', $data['username'])->first();
+        if ($existingUsername && $existingUsername->id != $id) {
+            return redirect()->back()->withInput()->with('errors', ['Username sudah digunakan']);
+        }
+
         $updated = $this->userModel->update($id, $data);
 
         if ($updated === false) {
@@ -76,6 +89,8 @@ class UserManagementController extends BaseController
 
         return redirect()->to(base_url('superadmin/users'))->with('success', 'User updated');
     }
+
+
 
     public function delete($id)
     {

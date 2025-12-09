@@ -11,7 +11,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th>Name</th>
                     <th>Critical</th>
                     <th>Active</th>
@@ -22,13 +22,15 @@
                 <?php $no = 1; ?>
                 <?php foreach ($apps as $a): ?>
                     <tr>
-                        <td><?= $no++ ?></td>
+                        <td><?= $no++ ?></td> <!-- nomor urut -->
                         <td><?= esc($a->name) ?></td>
                         <td><?= $a->is_critical ? 'Yes' : 'No' ?></td>
                         <td><?= $a->is_active ? 'Yes' : 'No' ?></td>
                         <td>
                             <a href="<?= base_url('superadmin/applications/' . $a->id . '/edit') ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                            <form action="<?= base_url('superadmin/applications/' . $a->id . '/delete') ?>" method="post" style="display:inline-block" onsubmit="return confirm('Delete application?')">
+                            <form action="<?= route_to('superadmin.applications.delete', $a->id) ?>" method="post" style="display:inline-block" onsubmit="return confirm('Delete application?')">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="_method" value="DELETE">
                                 <button class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         </td>
@@ -38,6 +40,7 @@
         </table>
     </div>
 </div>
+
 
 
 <?= $this->endSection() ?>

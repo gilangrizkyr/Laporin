@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use CodeIgniter\Model;
@@ -27,12 +28,13 @@ class UserModel extends Model
     protected $updatedField  = 'updated_at';
 
     protected $validationRules = [
-        'username'  => 'required|min_length[3]|max_length[50]|is_unique[users.username,id,{id}]',
-        'email'     => 'required|valid_email|is_unique[users.email,id,{id}]',
+        'username'  => 'required|min_length[3]|max_length[50]',
+        'email'     => 'required|valid_email',
         'password'  => 'permit_empty|min_length[6]',
         'full_name' => 'required|min_length[3]|max_length[100]',
         'role'      => 'required|in_list[user,admin,superadmin]',
     ];
+
 
     protected $validationMessages = [
         'username' => [
@@ -84,23 +86,23 @@ class UserModel extends Model
     public function getUsersByRole(string $role): array
     {
         return $this->where('role', $role)
-                    ->where('is_active', 1)
-                    ->findAll();
+            ->where('is_active', 1)
+            ->findAll();
     }
 
     public function getAllAdmins(): array
     {
         return $this->whereIn('role', ['admin', 'superadmin'])
-                    ->where('is_active', 1)
-                    ->findAll();
+            ->where('is_active', 1)
+            ->findAll();
     }
 
     public function searchUsers(string $keyword): array
     {
         return $this->like('full_name', $keyword)
-                    ->orLike('username', $keyword)
-                    ->orLike('email', $keyword)
-                    ->findAll();
+            ->orLike('username', $keyword)
+            ->orLike('email', $keyword)
+            ->findAll();
     }
 
     public function toggleActive(int $userId): bool

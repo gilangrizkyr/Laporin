@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3 mb-3">
         <div class="stat-card bg-warning text-black">
             <div class="d-flex justify-content-between align-items-center">
@@ -42,7 +42,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3 mb-3">
         <div class="stat-card bg-info text-black">
             <div class="d-flex justify-content-between align-items-center">
@@ -56,7 +56,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3 mb-3">
         <div class="stat-card bg-success text-black">
             <div class="d-flex justify-content-between align-items-center">
@@ -88,7 +88,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>Judul</th>
                             <th>Prioritas</th>
                             <th>Status</th>
@@ -97,23 +97,26 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php $no = 1; ?>
                         <?php foreach ($recentComplaints as $complaint): ?>
                             <tr>
-                                <td>
-                                    <strong>#<?= $complaint->id ?></strong>
-                                </td>
+                                <td><strong><?= $no++ ?></strong></td>
+
                                 <td>
                                     <a href="<?= base_url('user/complaints/' . $complaint->id) ?>" class="text-decoration-none">
                                         <?= esc($complaint->title) ?>
                                     </a>
                                 </td>
+
                                 <td><?= $complaint->getPriorityBadge() ?></td>
                                 <td><?= $complaint->getStatusBadge() ?></td>
+
                                 <td>
                                     <small class="text-muted">
                                         <?= date('d M Y', strtotime($complaint->created_at)) ?>
                                     </small>
                                 </td>
+
                                 <td>
                                     <a href="<?= base_url('user/complaints/' . $complaint->id) ?>" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye"></i> Detail
@@ -124,6 +127,7 @@
                     </tbody>
                 </table>
             </div>
+
         <?php else: ?>
             <div class="text-center py-5">
                 <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
@@ -135,6 +139,7 @@
             </div>
         <?php endif; ?>
     </div>
+
 </div>
 
 <!-- Quick Actions -->
@@ -151,7 +156,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4 mb-3">
         <div class="card h-100 border-info">
             <div class="card-body text-center">
@@ -164,7 +169,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4 mb-3">
         <div class="card h-100 border-primary">
             <div class="card-body text-center">
