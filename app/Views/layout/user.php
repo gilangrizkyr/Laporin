@@ -331,6 +331,7 @@
     <?= $this->renderSection('scripts') ?>
     <!-- Custom JS -->
     <script src="<?= base_url('assets/js/app.js') ?>"></script>
+    
 </body>
 
 </html>

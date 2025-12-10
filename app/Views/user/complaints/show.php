@@ -34,15 +34,17 @@
                                 class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
-                            <button type="button" class="btn btn-sm btn-danger"
-                                onclick="confirmDelete(<?= $complaint->id ?>)">
+                            <button type="button" class="btn btn-sm btn-danger delete-btn"
+                                data-id="<?= $complaint->id ?>">
                                 <i class="fas fa-trash"></i> Hapus
                             </button>
+
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
             <div class="card-body">
+
                 <!-- Meta Info -->
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -170,7 +172,6 @@
                     </div>
                 <?php elseif ($complaint->isClosed()): ?>
                     <?php
-                    // Get feedback
                     $feedbackModel = new \App\Models\FeedbackModel();
                     $feedback = $feedbackModel->getFeedbackByComplaint($complaint->id);
                     ?>
@@ -206,7 +207,6 @@
                             <?php
                             $action = $h['action'] ?? null;
                             $createdAt = $h['created_at'] ?? null;
-                            // Relative time
                             $timeDiff = 'Baru saja';
                             if ($createdAt) {
                                 $created = new DateTime($createdAt);
@@ -224,7 +224,8 @@
                             <div class="timeline-item mb-3" data-action="<?= esc($action) ?>">
                                 <div class="d-flex">
                                     <div class="timeline-icon me-2">
-                                        <div class="rounded-circle" style="width:28px;height:28px;background-color:var(--bs-<?= \App\Models\ComplaintHistoryModel::getActionBadgeClass($action) ?>);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;">
+                                        <div class="rounded-circle"
+                                            style="width:28px;height:28px;background-color:var(--bs-<?= \App\Models\ComplaintHistoryModel::getActionBadgeClass($action) ?>);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;">
                                             <i class="fas <?= \App\Models\ComplaintHistoryModel::getActionIcon($action) ?>"></i>
                                         </div>
                                     </div>
@@ -263,26 +264,35 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form id="deleteForm" method="post" style="display: inline;">
+
+                <form id="deleteForm" method="post" action="">
                     <?= csrf_field() ?>
                     <input type="hidden" name="_method" value="DELETE">
                     <button type="submit" class="btn btn-danger">Ya, Hapus</button>
                 </form>
+
             </div>
         </div>
     </div>
 </div>
 
-<?= $this->endSection() ?>
+<?= $this->endSection() ?> <!-- END CONTENT -->
 
 <?= $this->section('scripts') ?>
 <script>
-    function confirmDelete(id) {
-        const form = document.getElementById('deleteForm');
-        form.action = '<?= base_url('user/delete/') ?>' + id;
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            console.log("DELETE ID:", id); // harus 23
 
-        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        modal.show();
-    }
+            const form = document.getElementById("deleteForm");
+            form.action = "<?= base_url('user/complaints') ?>/" + id;
+            console.log("SET ACTION:", form.action); // harus http://localhost:8080/user/complaints/23
+
+            const modal = new bootstrap.Modal(document.getElementById("deleteModal"));
+            modal.show();
+        });
+    });
 </script>
-<?= $this->endSection() ?>
+
+<?= $this->endSection() ?> <!-- END SCRIPTS -->

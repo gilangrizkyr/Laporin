@@ -51,7 +51,7 @@ class NotificationController extends BaseController
         return $this->response->setJSON(['success' => true]);
     }
 
-    // Tandai semua
+    // Tandai semua sebagai dibaca
     public function markAllAsRead()
     {
         $userId = session()->get('user_id');
@@ -59,5 +59,27 @@ class NotificationController extends BaseController
         $this->model->markAllAsRead($userId);
         return $this->response->setJSON(['success' => true]);
     }
+
+    // Mendapatkan jumlah notifikasi yang belum dibaca
+    public function getUnreadCount()
+    {
+        $userId = session()->get('user_id');
+        $count = $this->model->where('user_id', $userId)
+                             ->where('is_read', false) // Hanya yang belum dibaca
+                             ->countAllResults(); // Menghitung jumlah
+
+        return $this->response->setJSON(['count' => $count]);
+    }
+
+    // Mendapatkan 5 notifikasi terbaru
+    public function getRecentNotifications()
+    {
+        $userId = session()->get('user_id');
+        $notifications = $this->model->where('user_id', $userId)
+                                     ->where('is_read', false) // Hanya yang belum dibaca
+                                     ->orderBy('created_at', 'DESC')
+                                     ->findAll(5); // Mengambil 5 notifikasi terbaru
+
+        return $this->response->setJSON(['notifications' => $notifications]);
+    }
 }
-    
