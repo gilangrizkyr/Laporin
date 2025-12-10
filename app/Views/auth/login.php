@@ -140,12 +140,12 @@
                             <i class="fas fa-sign-in-alt"></i> Login
                         </button>
 
-                        <div class="text-center">
+                        <!-- <div class="text-center">
                             <p class="mb-2">Belum punya akun?</p>
                             <a href="<?= base_url('auth/register') ?>" class="btn btn-outline-success">
                                 <i class="fas fa-user-plus"></i> Daftar Sekarang
                             </a>
-                        </div>
+                        </div> -->
 
                         <hr class="my-4">
 
