@@ -240,7 +240,7 @@
 
             <div class="topbar-user">
                 <!-- Notifications -->
-                <div class="dropdown">
+                <!-- <div class="dropdown">
                     <a href="#" class="text-dark notification-badge" data-bs-toggle="dropdown">
                         <i class="fas fa-bell fa-lg"></i>
                         <span class="badge bg-danger" id="notifCount">0</span>
@@ -254,7 +254,7 @@
                         </li>
                         <li><a class="dropdown-item text-center" href="<?= base_url('user/notifications') ?>">Lihat Semua</a></li>
                     </ul>
-                </div>
+                </div> -->
 
                 <!-- User Menu -->
                 <div class="dropdown">

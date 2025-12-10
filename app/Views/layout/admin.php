@@ -341,11 +341,11 @@
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profile</a></li>
+                        <!-- <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profile</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Settings</a></li>
                         <li>
                             <hr class="dropdown-divider">
-                        </li>
+                        </li> -->
                         <li><a class="dropdown-item text-danger" href="<?= base_url('auth/logout') ?>">
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </a></li>
