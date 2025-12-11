@@ -31,7 +31,29 @@ class ComplaintModel extends Model
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+  /** sini */
+    public function getUserComplaintStats(int $userId): array
+    {
+        $builder = $this->where('user_id', $userId);
 
+        return [
+            'total'       => (clone $builder)->countAllResults(),
+            'pending'     => (clone $builder)->where('status', 'pending')->countAllResults(),
+            'in_progress' => (clone $builder)->where('status', 'in_progress')->countAllResults(),
+            'resolved'    => (clone $builder)->where('status', 'resolved')->countAllResults(),
+            'closed'      => (clone $builder)->where('status', 'closed')->countAllResults(),
+        ];
+    }
+
+    /** Ambil recent complaints + nama aplikasi (untuk homepage) */
+    public function getRecentComplaints(int $limit = 5): array
+    {
+        return $this->select('complaints.*, applications.name as application_name')
+                    ->join('applications', 'applications.id = complaints.application_id')
+                    ->orderBy('complaints.created_at', 'DESC')
+                    ->findAll($limit);
+    }
+ /** sini */
     // METHOD BARU: INI YANG BIKIN REPORT CANTIK!
     public function getFilteredComplaintsWithRelations(?array $filters = null): array
     {
