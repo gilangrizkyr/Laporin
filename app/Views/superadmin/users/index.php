@@ -58,24 +58,14 @@
                             </form>
 
                             <!-- Hapus -->
-                            <!-- <form action="<?= route_to('superadmin.users.delete', $u->id) ?>" method="post" style="display:inline-block"
+                            <form action="<?= route_to('superadmin.users.delete', $u->id) ?>" method="post" style="display:inline-block"
                                 onsubmit="return confirm('Yakin hapus user ini?')">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button class="btn btn-sm btn-outline-danger">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </form> -->
-                            <form action="<?= route_to('superadmin.users.delete', $u->id) ?>" 
-      method="post" 
-      style="display:inline-block"
-      onsubmit="return confirm('Yakin hapus user ini?')">
-    <?= csrf_field() ?>
-    <button class="btn btn-sm btn-outline-danger">
-        <i class="fas fa-trash"></i>
-    </button>
-</form>
-
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
