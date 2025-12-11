@@ -86,8 +86,6 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
     $routes->post('complaints/(:num)/assign', 'ComplaintController::assign/$1', ['as' => 'admin.complaints.assign']);
     $routes->post('complaints/(:num)/status', 'ComplaintController::changeStatus/$1', ['as' => 'admin.complaints.status']);
     $routes->post('complaints/(:num)/priority', 'ComplaintController::changePriority/$1', ['as' => 'admin.complaints.priority']);
-
-    // Chat (Admin Side)
     $routes->get('complaints/(:num)/chat', 'ChatController::index/$1', ['as' => 'admin.chat']);
     $routes->post('complaints/(:num)/chat/send', 'ChatController::send/$1', ['as' => 'admin.chat.send']);
     $routes->get('complaints/(:num)/chat/fetch', 'ChatController::fetch/$1', ['as' => 'admin.chat.fetch']);
@@ -142,21 +140,29 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'ro
 
 // ========== SUPERADMIN ROUTES (Auth Required, Role: superadmin only) ========== //
 
-$routes->group('superadmin', ['namespace' => 'App\Controllers\Superadmin', 'filter' => 'role:superadmin'], function ($routes) {
+// ========== SUPERADMIN ROUTES (Auth Required, Role: superadmin only) ==========
+
+$routes->group('superadmin', [
+    'namespace' => 'App\Controllers\Superadmin',
+    'filter'    => 'role:superadmin'
+], function ($routes) {
 
     // Dashboard
     $routes->get('dashboard', 'DashboardController::index', ['as' => 'superadmin.dashboard']);
 
-    // User Management
+    // ==================== USER MANAGEMENT ====================
     $routes->get('users', 'UserManagementController::index', ['as' => 'superadmin.users']);
     $routes->get('users/create', 'UserManagementController::create', ['as' => 'superadmin.users.create']);
     $routes->post('users/store', 'UserManagementController::store', ['as' => 'superadmin.users.store']);
     $routes->get('users/(:num)/edit', 'UserManagementController::edit/$1', ['as' => 'superadmin.users.edit']);
     $routes->post('users/(:num)/update', 'UserManagementController::update/$1', ['as' => 'superadmin.users.update']);
     $routes->delete('users/(:num)', 'UserManagementController::delete/$1', ['as' => 'superadmin.users.delete']);
-    $routes->post('users/(:num)/toggle-active', 'UserManagementController::toggleActive/$1', ['as' => 'superadmin.users.toggle']);
 
-    // Application Management
+    // TOGGEL AKTIF / NONAKTIFKAN USER → INI YANG WAJIB ADA & SUDAH BENAR!
+    $routes->post('users/toggle/(:num)', 'UserManagementController::toggleActive/$1', ['as' => 'superadmin.users.toggle']);
+
+
+    // ==================== APPLICATION MANAGEMENT ====================
     $routes->get('applications', 'ApplicationManagementController::index', ['as' => 'superadmin.applications']);
     $routes->get('applications/create', 'ApplicationManagementController::create', ['as' => 'superadmin.applications.create']);
     $routes->post('applications/store', 'ApplicationManagementController::store', ['as' => 'superadmin.applications.store']);
@@ -164,7 +170,8 @@ $routes->group('superadmin', ['namespace' => 'App\Controllers\Superadmin', 'filt
     $routes->post('applications/(:num)/update', 'ApplicationManagementController::update/$1', ['as' => 'superadmin.applications.update']);
     $routes->delete('applications/(:num)', 'ApplicationManagementController::delete/$1', ['as' => 'superadmin.applications.delete']);
 
-    // Category Management
+
+    // ==================== CATEGORY MANAGEMENT ====================
     $routes->get('categories', 'CategoryManagementController::index', ['as' => 'superadmin.categories']);
     $routes->get('categories/create', 'CategoryManagementController::create', ['as' => 'superadmin.categories.create']);
     $routes->post('categories/store', 'CategoryManagementController::store', ['as' => 'superadmin.categories.store']);
@@ -172,10 +179,13 @@ $routes->group('superadmin', ['namespace' => 'App\Controllers\Superadmin', 'filt
     $routes->post('categories/(:num)/update', 'CategoryManagementController::update/$1', ['as' => 'superadmin.categories.update']);
     $routes->delete('categories/(:num)', 'CategoryManagementController::delete/$1', ['as' => 'superadmin.categories.delete']);
 
-    // System Analytics
+
+    // ==================== SYSTEM ANALYTICS ====================
     $routes->get('analytics', 'SystemAnalyticsController::index', ['as' => 'superadmin.analytics']);
     $routes->get('analytics/export', 'SystemAnalyticsController::export', ['as' => 'superadmin.analytics.export']);
     $routes->get('analytics/export-excel', 'SystemAnalyticsController::exportExcel', ['as' => 'superadmin.analytics.exportExcel']);
-    // Priority override
+
+
+    // ==================== PRIORITY OVERRIDE (Complaint) ====================
     $routes->match(['get', 'post'], 'complaints/(:num)/override-priority', 'PriorityController::override/$1', ['as' => 'superadmin.priority.override']);
 });

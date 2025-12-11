@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title ?? 'Sistem Pengaduan') ?></title>
+    <link rel="shortcut icon" href="<?= base_url('img/logo-dpmptsp.png') ?>" type="image/x-icon">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -98,37 +99,73 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="<?= base_url('/') ?>">
-                <i class="fas fa-clipboard-list text-success"></i> Laporin
+            <!-- LOGO + TULISAN DI SEBELAHNYA -->
+            <a class="navbar-brand d-flex align-items-center" href="<?= base_url('/') ?>">
+                <!-- LOGO -->
+                <img src="<?= base_url('img/beraksi2.png') ?>"
+                    alt="Logo Laporin"
+                    style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;">
+                <span style="font-weight: 700; font-size: 1.4rem; color: #1e40af;">
+                    Laporin
+                </span>
+                <span style="font-size: 0.9rem; color: #64748b; margin-left: 6px;">
+                    | Sistem Pengaduan Aplikasi
+                </span>
             </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
+
+                    <!-- BERANDA -->
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('/') ?>">Beranda</a>
+                        <a class="nav-link btn btn-outline-primary btn-sm px-3 me-2" href="<?= base_url('/') ?>">
+                            <i class="fas fa-home me-1"></i> Beranda
+                        </a>
                     </li>
+
+                    <!-- BASIS PENGETAHUAN -->
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('knowledge-base') ?>">Basis Pengetahuan</a>
+                        <a class="nav-link btn btn-outline-info btn-sm px-3 me-2" href="<?= base_url('knowledge-base') ?>">
+                            <i class="fas fa-book-open me-1"></i> Basis Pengetahuan
+                        </a>
                     </li>
+
                     <?php if (session()->has('user_id')): ?>
+                        <!-- DASHBOARD -->
                         <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url(session()->get('role') . '/dashboard') ?>">
-                                Dashboard
+                            <a class="nav-link btn btn-outline-success btn-sm px-3 me-2"
+                                href="<?= base_url(session()->get('role') . '/dashboard') ?>">
+                                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
                             </a>
                         </li>
+
+                        <!-- LOGOUT -->
                         <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('auth/logout') ?>">Logout</a>
+                            <a class="nav-link btn btn-danger btn-sm px-3" href="<?= base_url('auth/logout') ?>">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a>
                         </li>
+
                     <?php else: ?>
+                        <!-- LOGIN -->
                         <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('auth/login') ?>">Login</a>
+                            <a class="nav-link btn btn-outline-secondary btn-sm px-3 me-2" href="<?= base_url('auth/login') ?>">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
                         </li>
+
+                        <!-- REGISTER -->
                         <li class="nav-item">
-                            <a class="btn btn-success btn-sm ms-2" href="<?= base_url('auth/register') ?>">Register</a>
+                            <a class="nav-link btn btn-success btn-sm px-4 shadow-sm" href="<?= base_url('auth/register') ?>">
+                                <i class="fas fa-user-plus me-1"></i> Register
+                            </a>
                         </li>
                     <?php endif; ?>
+
                 </ul>
             </div>
         </div>

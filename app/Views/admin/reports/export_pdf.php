@@ -1,152 +1,118 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
+    <title>Laporan Pengaduan</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 10px;
-            color: #333;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #1976D2;
-            padding-bottom: 10px;
-        }
-
-        .header h1 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 9px;
-        }
-
-        .filters {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #f5f5f5;
-            border-left: 3px solid #1976D2;
-        }
-
-        .filters strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .filter-item {
-            display: inline-block;
-            margin-right: 15px;
-            font-size: 9px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        table th {
-            background: #1976D2;
-            color: white;
-            padding: 6px;
-            text-align: left;
-            font-weight: bold;
-        }
-
-        table td {
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .footer {
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-            font-size: 8px;
-            color: #999;
-            text-align: center;
-        }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; color: #2c3e50; }
+        .header p { margin: 5px 0; color: #7f8c8d; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #bdc3c7; padding: 10px; text-align: left; }
+        th { background-color: #3498db; color: white; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; }
+        .status-pending { background: #f39c12; }
+        .status-resolved { background: #27ae60; }
+        .status-closed { background: #95a5a6; }
+        .priority-urgent { background: #e74c3c; }
+        .priority-important { background: #e67e22; }
+        .priority-normal { background: #3498db; }
+        .text-center { text-align: center; }
+        .mt-20 { margin-top: 20px; }
     </style>
 </head>
-
 <body>
     <div class="header">
-        <h1>CUSTOM REPORT</h1>
-        <p>Generated: <?= date('d/m/Y H:i') ?></p>
+        <h1>LAPORAN PENGADUAN SISTEM</h1>
+        <p>Dibuat pada: <?= date('d F Y H:i') ?></p>
+        <p>Total Pengaduan: <strong><?= count($complaints) ?></strong></p>
     </div>
 
-    <div class="filters">
-        <strong>Applied Filters:</strong>
-        <?php if (!empty($filters['date_from'])): ?>
-            <div class="filter-item">Date From: <?= $filters['date_from'] ?></div>
-        <?php endif; ?>
-        <?php if (!empty($filters['date_to'])): ?>
-            <div class="filter-item">Date To: <?= $filters['date_to'] ?></div>
-        <?php endif; ?>
-        <?php if (!empty($filters['application_id'])): ?>
-            <div class="filter-item">Application: <?= $filters['application_id'] ?></div>
-        <?php endif; ?>
-        <?php if (!empty($filters['status'])): ?>
-            <div class="filter-item">Status: <?= ucfirst(str_replace('_', ' ', $filters['status'])) ?></div>
-        <?php endif; ?>
-        <?php if (!empty($filters['priority'])): ?>
-            <div class="filter-item">Priority: <?= ucfirst($filters['priority']) ?></div>
-        <?php endif; ?>
+    <?php if (!empty($filters)): ?>
+    <div class="mt-20">
+        <strong>Filter yang digunakan:</strong><br>
+        <?php foreach ($filters as $key => $value): ?>
+            <?php if ($value): ?>
+                <?php
+                    $label = ucwords(str_replace(['_id', '_'], ' ', $key));
+                    if ($key === 'application_id') {
+                        $app = (new \App\Models\ApplicationModel())->find($value);
+                        $value = $app ? $app->name : '-';
+                    } elseif ($key === 'category_id') {
+                        $cat = (new \App\Models\CategoryModel())->find($value);
+                        $value = $cat ? $cat->name : '-';
+                    } elseif ($key === 'assigned_to') {
+                        $user = (new \App\Models\UserModel())->find($value);
+                        $value = $user ? $user->full_name : '-';
+                    }
+                ?>
+                <small>• <?= $label ?>: <?= $value ?></small><br>
+            <?php endif; ?>
+        <?php endforeach; ?>
     </div>
+    <?php endif; ?>
 
     <table>
         <thead>
             <tr>
-                <th>#</th>
-                <th>ID</th>
-                <th>Title</th>
-                <th>User</th>
-                <?php if (in_array('application', $metrics)): ?><th>Application</th><?php endif; ?>
-                <?php if (in_array('category', $metrics)): ?><th>Category</th><?php endif; ?>
+                <th width="5%">No</th>
+                <th>Judul Pengaduan</th>
+                <th>Pengadu</th>
+                <?php if (in_array('application', $metrics)): ?><th>Aplikasi</th><?php endif; ?>
+                <?php if (in_array('category', $metrics)): ?><th>Kategori</th><?php endif; ?>
                 <?php if (in_array('status', $metrics)): ?><th>Status</th><?php endif; ?>
-                <?php if (in_array('priority', $metrics)): ?><th>Priority</th><?php endif; ?>
-                <?php if (in_array('created', $metrics)): ?><th>Created</th><?php endif; ?>
-                <?php if (in_array('resolved', $metrics)): ?><th>Resolved</th><?php endif; ?>
+                <?php if (in_array('priority', $metrics)): ?><th>Prioritas</th><?php endif; ?>
+                <?php if (in_array('created', $metrics)): ?><th>Dibuat</th><?php endif; ?>
+                <?php if (in_array('resolved', $metrics)): ?><th>Selesai</th><?php endif; ?>
             </tr>
         </thead>
         <tbody>
-            <?php if (empty($complaints)): ?>
-                <tr>
-                    <td colspan="10" style="text-align: center; color: #999;">No data</td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($complaints as $i => $c): ?>
-                    <tr>
-                        <td><?= $i + 1 ?></td>
-                        <td><?= $c->id ?></td>
-                        <td><?= esc(substr($c->title, 0, 50)) ?></td>
-                        <td><?= $c->user_id ?></td>
-                        <?php if (in_array('application', $metrics)): ?><td><?= $c->application_id ?></td><?php endif; ?>
-                        <?php if (in_array('category', $metrics)): ?><td><?= $c->category_id ?></td><?php endif; ?>
-                        <?php if (in_array('status', $metrics)): ?><td><?= ucfirst(str_replace('_', ' ', $c->status)) ?></td><?php endif; ?>
-                        <?php if (in_array('priority', $metrics)): ?><td><?= ucfirst($c->priority) ?></td><?php endif; ?>
-                        <?php if (in_array('created', $metrics)): ?><td><?= date('Y-m-d', strtotime($c->created_at)) ?></td><?php endif; ?>
-                        <?php if (in_array('resolved', $metrics)): ?><td><?= $c->resolved_at ? date('Y-m-d', strtotime($c->resolved_at)) : '-' ?></td><?php endif; ?>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <?php foreach ($complaints as $i => $c): ?>
+            <tr>
+                <td class="text-center"><?= $i + 1 ?></td>
+                <td><?= esc($c->title) ?></td>
+                <td><strong><?= esc($c->user_full_name ?? 'Unknown User') ?></strong></td>
+                
+                <?php if (in_array('application', $metrics)): ?>
+                    <td><?= esc($c->application_name ?? '-') ?></td>
+                <?php endif; ?>
+
+                <?php if (in_array('category', $metrics)): ?>
+                    <td><?= esc($c->category_name ?? '-') ?></td>
+                <?php endif; ?>
+
+                <?php if (in_array('status', $metrics)): ?>
+                    <td>
+                        <span class="badge status-<?= $c->status ?>">
+                            <?= ucfirst(str_replace('_', ' ', $c->status)) ?>
+                        </span>
+                    </td>
+                <?php endif; ?>
+
+                <?php if (in_array('priority', $metrics)): ?>
+                    <td>
+                        <span class="badge priority-<?= $c->priority ?>">
+                            <?= ucfirst($c->priority) ?>
+                        </span>
+                    </td>
+                <?php endif; ?>
+
+                <?php if (in_array('created', $metrics)): ?>
+                    <td><?= date('d-m-Y', strtotime($c->created_at)) ?></td>
+                <?php endif; ?>
+
+                <?php if (in_array('resolved', $metrics)): ?>
+                    <td><?= $c->resolved_at ? date('d-m-Y', strtotime($c->resolved_at)) : '-' ?></td>
+                <?php endif; ?>
+            </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
 
-    <div class="footer">
-        <p>Total Records: <?= count($complaints) ?> | Report Type: Custom | System Pengaduan</p>
+    <div class="mt-20 text-center">
+        <small>© <?= date('Y') ?> Sistem Pengaduan Internal - Dicetak otomatis oleh sistem</small>
     </div>
 </body>
-
 </html>

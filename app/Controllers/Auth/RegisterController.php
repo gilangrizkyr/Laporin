@@ -37,7 +37,7 @@ class RegisterController extends BaseController
     public function create()
     {
         $validation = \Config\Services::validation();
-        
+
         $rules = [
             'username'         => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
             'email'            => 'required|valid_email|is_unique[users.email]',
@@ -73,8 +73,8 @@ class RegisterController extends BaseController
 
         if (!$this->validate($rules, $errors)) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('errors', $validation->getErrors());
+                ->withInput()
+                ->with('errors', $validation->getErrors());
         }
 
         // Create user
@@ -84,23 +84,25 @@ class RegisterController extends BaseController
             'full_name' => $this->request->getPost('full_name'),
             'password'  => $this->request->getPost('password'),
             'role'      => 'user', // Default role
-            'is_active' => 1,
+            'is_active' => 0,
         ];
 
         $userId = $this->userModel->insert($userData);
 
         if (!$userId) {
             return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Gagal membuat akun. Silakan coba lagi.');
+                ->withInput()
+                ->with('error', 'Gagal membuat akun. Silakan coba lagi.');
         }
 
-        // Auto login after registration
-        $user = $this->userModel->find($userId);
-        $this->setUserSession($user);
+        // === PESAN SUKSES YANG LEBIH JELAS ===
+        return redirect()->to('auth/login')->with(
+            'success',
+            'Registrasi berhasil! Akun Anda sedang menunggu persetujuan. Silakan tunggu atau hubungi admin.'
+        );
 
-        return redirect()->to('user/dashboard')
-                       ->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->full_name);
+        // Tidak lagi auto-login
+        // $this->setUserSession($user);   <-- HAPUS atau COMMENT
     }
 
     /**

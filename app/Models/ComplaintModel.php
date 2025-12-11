@@ -32,103 +32,72 @@ class ComplaintModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    protected $validationRules = [
-        'user_id'        => 'required|integer',
-        'application_id' => 'required|integer',
-        'title'          => 'required|min_length[5]|max_length[200]',
-        'description'    => 'required|min_length[10]',
-        'impact_type'    => 'required|in_list[cannot_use,specific_bug,slow_performance,other]',
-        'priority'       => 'in_list[normal,important,urgent]',
-        'status'         => 'in_list[pending,in_progress,resolved,closed]',
-    ];
-
-    protected $validationMessages = [
-        'title' => [
-            'required'   => 'Judul laporan harus diisi',
-            'min_length' => 'Judul minimal 5 karakter'
-        ],
-        'description' => [
-            'required'   => 'Deskripsi laporan harus diisi',
-            'min_length' => 'Deskripsi minimal 10 karakter'
-        ]
-    ];
-
-    // ========== QUERY METHODS FOR USER ==========
-
-    public function getComplaintsByUser(int $userId, ?string $status = null): array
+    // METHOD BARU: INI YANG BIKIN REPORT CANTIK!
+    public function getFilteredComplaintsWithRelations(?array $filters = null): array
     {
-        $builder = $this->where('user_id', $userId);
-        
-        if ($status) {
-            $builder->where('status', $status);
+        $builder = $this->builder();
+
+        $builder->select('
+            complaints.*,
+            u.full_name as user_full_name,
+            u.email as user_email,
+            a.name as application_name,
+            c.name as category_name
+        ');
+        $builder->join('users u', 'u.id = complaints.user_id', 'left');
+        $builder->join('applications a', 'a.id = complaints.application_id', 'left');
+        $builder->join('categories c', 'c.id = complaints.category_id', 'left');
+
+        if ($filters) {
+            if (!empty($filters['status']))          $builder->where('complaints.status', $filters['status']);
+            if (!empty($filters['priority']))        $builder->where('complaints.priority', $filters['priority']);
+            if (!empty($filters['application_id'])) $builder->where('complaints.application_id', $filters['application_id']);
+            if (!empty($filters['category_id']))     $builder->where('complaints.category_id', $filters['category_id']);
+            if (!empty($filters['assigned_to']))     $builder->where('complaints.assigned_to', $filters['assigned_to']);
+            if (!empty($filters['date_from']))       $builder->where('complaints.created_at >=', $filters['date_from']);
+            if (!empty($filters['date_to']))         $builder->where('complaints.created_at <=', $filters['date_to']);
         }
-        
-        return $builder->orderBy('created_at', 'DESC')->findAll();
+
+        return $builder->orderBy('complaints.created_at', 'DESC')->get()->getResult();
     }
 
-    public function getUserComplaintStats(int $userId): array
-    {
-        return [
-            'total'       => $this->where('user_id', $userId)->countAllResults(),
-            'pending'     => $this->where(['user_id' => $userId, 'status' => 'pending'])->countAllResults(),
-            'in_progress' => $this->where(['user_id' => $userId, 'status' => 'in_progress'])->countAllResults(),
-            'resolved'    => $this->where(['user_id' => $userId, 'status' => 'resolved'])->countAllResults(),
-            'closed'      => $this->where(['user_id' => $userId, 'status' => 'closed'])->countAllResults(),
-        ];
-    }
-
-    // ========== QUERY METHODS FOR ADMIN ==========
-
+    // Tetap pertahankan method lama biar tidak rusak fitur lain
     public function getAllComplaints(?array $filters = null): array
     {
         $builder = $this;
-
         if ($filters) {
-            if (!empty($filters['status'])) {
-                $builder->where('status', $filters['status']);
-            }
-            if (!empty($filters['priority'])) {
-                $builder->where('priority', $filters['priority']);
-            }
-            if (!empty($filters['application_id'])) {
-                $builder->where('application_id', $filters['application_id']);
-            }
-            if (!empty($filters['assigned_to'])) {
-                $builder->where('assigned_to', $filters['assigned_to']);
-            }
-            if (!empty($filters['date_from'])) {
-                $builder->where('created_at >=', $filters['date_from']);
-            }
-            if (!empty($filters['date_to'])) {
-                $builder->where('created_at <=', $filters['date_to']);
-            }
+            if (!empty($filters['status']))          $builder->where('status', $filters['status']);
+            if (!empty($filters['priority']))        $builder->where('priority', $filters['priority']);
+            if (!empty($filters['application_id'])) $builder->where('application_id', $filters['application_id']);
+            if (!empty($filters['assigned_to']))     $builder->where('assigned_to', $filters['assigned_to']);
+            if (!empty($filters['date_from']))       $builder->where('created_at >=', $filters['date_from']);
+            if (!empty($filters['date_to']))         $builder->where('created_at <=', $filters['date_to']);
         }
-
         return $builder->orderBy('created_at', 'DESC')->findAll();
     }
 
     public function getComplaintsByAdmin(int $adminId): array
     {
         return $this->where('assigned_to', $adminId)
-                    ->orderBy('created_at', 'DESC')
-                    ->findAll();
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
     }
 
     public function getUnassignedComplaints(): array
     {
         return $this->where('assigned_to', null)
-                    ->where('status', 'pending')
-                    ->orderBy('priority', 'DESC')
-                    ->orderBy('created_at', 'ASC')
-                    ->findAll();
+            ->where('status', 'pending')
+            ->orderBy('priority', 'DESC')
+            ->orderBy('created_at', 'ASC')
+            ->findAll();
     }
 
     public function getUrgentComplaints(): array
     {
         return $this->where('priority', 'urgent')
-                    ->whereNotIn('status', ['closed'])
-                    ->orderBy('created_at', 'ASC')
-                    ->findAll();
+            ->whereNotIn('status', ['closed'])
+            ->orderBy('created_at', 'ASC')
+            ->findAll();
     }
 
     // ========== STATISTICS METHODS ==========
@@ -154,7 +123,7 @@ class ComplaintModel extends Model
                 WHERE YEAR(created_at) = ?
                 GROUP BY MONTH(created_at)
                 ORDER BY month";
-        
+
         return $this->db->query($sql, [$year])->getResultArray();
     }
 
@@ -168,7 +137,7 @@ class ComplaintModel extends Model
                 GROUP BY c.application_id
                 ORDER BY total_complaints DESC
                 LIMIT ?";
-        
+
         return $this->db->query($sql, [$limit])->getResultArray();
     }
 
@@ -179,7 +148,7 @@ class ComplaintModel extends Model
                 FROM {$this->table}
                 WHERE status = 'resolved'
                 AND resolved_at IS NOT NULL";
-        
+
         $result = $this->db->query($sql)->getRow();
         return $result ? round($result->avg_hours, 2) : null;
     }
@@ -189,7 +158,7 @@ class ComplaintModel extends Model
     public function searchComplaints(string $keyword, ?int $userId = null): array
     {
         $builder = $this->like('title', $keyword)
-                        ->orLike('description', $keyword);
+            ->orLike('description', $keyword);
 
         if ($userId) {
             $builder->where('user_id', $userId);

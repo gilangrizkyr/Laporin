@@ -19,223 +19,152 @@ class ReportGeneratorController extends BaseController
 
     public function __construct()
     {
-        $this->complaintModel = new ComplaintModel();
+        $this->complaintModel   = new ComplaintModel();
         $this->applicationModel = new ApplicationModel();
-        $this->categoryModel = new CategoryModel();
-        $this->userModel = new UserModel();
+        $this->categoryModel    = new CategoryModel();
+        $this->userModel        = new UserModel();
     }
 
-    /**
-     * Show custom report builder form
-     */
     public function index()
     {
-        $applications = $this->applicationModel->findAll();
-        $categories = $this->categoryModel->findAll();
-        $admins = $this->userModel->where('role', 'admin')->findAll();
-
-        return view('admin/reports/builder', [
-            'title' => 'Custom Report Generator',
-            'applications' => $applications,
-            'categories' => $categories,
-            'admins' => $admins,
-        ]);
+        $data = [
+            'title'        => 'Custom Report Generator',
+            'applications' => $this->applicationModel->findAll(),
+            'categories'   => $this->categoryModel->findAll(),
+            'admins'       => $this->userModel->whereIn('role', ['admin', 'superadmin'])->findAll(),
+        ];
+        return view('admin/reports/builder', $data);
     }
 
-    /**
-     * Generate report based on selected criteria
-     */
     public function generate()
     {
-        $metrics = $this->request->getPost('metrics') ?? [];
-        $dateFrom = $this->request->getPost('date_from');
-        $dateTo = $this->request->getPost('date_to');
-        $appId = $this->request->getPost('app_id');
-        $catId = $this->request->getPost('category_id');
-        $status = $this->request->getPost('status');
-        $priority = $this->request->getPost('priority');
-        $format = $this->request->getPost('format') ?? 'pdf'; // pdf or excel
+        $metrics    = $this->request->getPost('metrics') ?? [];
+        $dateFrom   = $this->request->getPost('date_from');
+        $dateTo     = $this->request->getPost('date_to');
+        $appId      = $this->request->getPost('app_id');
+        $catId      = $this->request->getPost('category_id');
+        $status     = $this->request->getPost('status');
+        $priority   = $this->request->getPost('priority');
         $assignedTo = $this->request->getPost('assigned_to');
+        $format     = $this->request->getPost('format') ?? 'pdf';
 
-        // Build filters
         $filters = array_filter([
-            'date_from' => $dateFrom,
-            'date_to' => $dateTo ? $dateTo . ' 23:59:59' : null,
+            'date_from'     => $dateFrom,
+            'date_to'       => $dateTo ? $dateTo . ' 23:59:59' : null,
             'application_id' => $appId,
-            'category_id' => $catId,
-            'status' => $status,
-            'priority' => $priority,
-            'assigned_to' => $assignedTo,
+            'category_id'   => $catId,
+            'status'        => $status,
+            'priority'      => $priority,
+            'assigned_to'   => $assignedTo,
         ]);
 
-        // Get filtered data
-        $complaints = $this->complaintModel->getAllComplaints($filters);
+        // PAKAI METHOD BARU → LANGSUNG DAPAT NAMA LENGKAP & NAMA APP
+        $complaints = $this->complaintModel->getFilteredComplaintsWithRelations($filters);
 
-        // Store report in session for download
         session()->set('report_data', [
             'complaints' => $complaints,
-            'metrics' => $metrics,
-            'filters' => [
-                'date_from' => $dateFrom,
-                'date_to' => $dateTo,
-                'app_id' => $appId,
-                'cat_id' => $catId,
-                'status' => $status,
-                'priority' => $priority,
-                'assigned_to' => $assignedTo,
-            ],
-            'format' => $format,
+            'metrics'    => $metrics,
+            'filters'    => $filters,
+            'format'     => $format,
         ]);
 
-        // Generate preview
         return view('admin/reports/preview', [
-            'title' => 'Report Preview',
+            'title'      => 'Report Preview',
             'complaints' => $complaints,
-            'metrics' => $metrics,
-            'filters' => $filters,
-            'format' => $format,
+            'metrics'    => $metrics,
+            'filters'    => $filters,
+            'format'     => $format,
         ]);
     }
 
-    /**
-     * Download generated report
-     */
     public function download(string $format)
     {
-        $reportData = session()->get('report_data');
-        if (!$reportData) {
-            return redirect()->to('admin/reports')->with('error', 'Report data not found');
-        }
-
-        $complaints = $reportData['complaints'];
-        $metrics = $reportData['metrics'];
-        $filters = $reportData['filters'];
+        $data = session()->get('report_data');
+        if (!$data) return redirect()->to('admin/reports')->with('error', 'No report data');
 
         if ($format === 'excel') {
-            return $this->generateExcel($complaints, $metrics, $filters);
+            return $this->generateExcel($data['complaints'], $data['metrics'], $data['filters']);
         } else {
-            return $this->generatePdf($complaints, $metrics, $filters);
+            return $this->generatePdf($data['complaints'], $data['metrics'], $data['filters']);
         }
     }
 
-    /**
-     * Generate Excel report
-     */
-    private function generateExcel(array $complaints, array $metrics, array $filters)
+    private function generateExcel($complaints, $metrics, $filters)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Report');
 
-        // Title
-        $sheet->setCellValue('A1', 'CUSTOM REPORT');
-        $sheet->mergeCells('A1:H1');
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-        $sheet->setCellValue('A2', 'Generated: ' . date('d/m/Y H:i'));
+        $sheet->setCellValue('A1', 'LAPORAN PENGADUAN SISTEM');
+        $sheet->mergeCells('A1:I1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
 
-        // Filters info
-        $row = 4;
-        $sheet->setCellValue('A' . $row, 'Report Filters:');
-        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
-        $row++;
-
-        if (!empty($filters['date_from'])) {
-            $sheet->setCellValue('A' . $row, 'Date From: ' . $filters['date_from']);
-            $row++;
-        }
-        if (!empty($filters['date_to'])) {
-            $sheet->setCellValue('A' . $row, 'Date To: ' . $filters['date_to']);
-            $row++;
-        }
-        if (!empty($filters['application_id'])) {
-            $app = $this->applicationModel->find($filters['application_id']);
-            $sheet->setCellValue('A' . $row, 'Application: ' . ($app ? $app->name : '-'));
-            $row++;
-        }
-        if (!empty($filters['status'])) {
-            $sheet->setCellValue('A' . $row, 'Status: ' . ucfirst(str_replace('_', ' ', $filters['status'])));
-            $row++;
-        }
-
-        // Data section
+        $row = 3;
+        $sheet->setCellValue("A{$row}", "Dibuat pada: " . date('d F Y H:i'));
         $row += 2;
-        $headerRow = $row;
 
-        // Headers based on selected metrics
-        $col = 'A';
-        $headers = ['ID', 'Title', 'User', 'Email'];
-        if (in_array('application', $metrics)) $headers[] = 'Application';
-        if (in_array('category', $metrics)) $headers[] = 'Category';
+        // Header tabel
+        $headers = ['No', 'Judul Pengaduan', 'Pengadu'];
+        if (in_array('application', $metrics)) $headers[] = 'Aplikasi';
+        if (in_array('category', $metrics)) $headers[] = 'Kategori';
         if (in_array('status', $metrics)) $headers[] = 'Status';
-        if (in_array('priority', $metrics)) $headers[] = 'Priority';
-        if (in_array('created', $metrics)) $headers[] = 'Created';
-        if (in_array('resolved', $metrics)) $headers[] = 'Resolved';
+        if (in_array('priority', $metrics)) $headers[] = 'Prioritas';
+        if (in_array('created', $metrics)) $headers[] = 'Tanggal Dibuat';
 
-        foreach ($headers as $header) {
-            $sheet->setCellValue($col . $row, $header);
-            $col++;
+        $col = 'A';
+        foreach ($headers as $h) {
+            $sheet->setCellValue($col++ . $row, $h);
         }
+        $sheet->getStyle("A{$row}:" . $col . $row)->getFont()->setBold(true);
+        $sheet->getStyle("A{$row}:" . $col . $row)->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFE4E4E4');
 
-        // Data rows
+        // Isi data
+        $no = 1;
         $row++;
         foreach ($complaints as $c) {
             $col = 'A';
-            $user = $this->userModel->find($c->user_id);
-            $app = $this->applicationModel->find($c->application_id);
-            $cat = $this->categoryModel->find($c->category_id);
-
-            $sheet->setCellValue($col++ . $row, $c->id);
+            $sheet->setCellValue($col++ . $row, $no++);
             $sheet->setCellValue($col++ . $row, $c->title);
-            $sheet->setCellValue($col++ . $row, $user ? $user->full_name : '-');
-            $sheet->setCellValue($col++ . $row, $user ? $user->email : '-');
-
-            if (in_array('application', $metrics)) $sheet->setCellValue($col++ . $row, $app ? $app->name : '-');
-            if (in_array('category', $metrics)) $sheet->setCellValue($col++ . $row, $cat ? $cat->name : '-');
+            $sheet->setCellValue($col++ . $row, $c->user_full_name ?? 'Unknown User');
+            if (in_array('application', $metrics)) $sheet->setCellValue($col++ . $row, $c->application_name ?? '-');
+            if (in_array('category', $metrics)) $sheet->setCellValue($col++ . $row, $c->category_name ?? '-');
             if (in_array('status', $metrics)) $sheet->setCellValue($col++ . $row, ucfirst(str_replace('_', ' ', $c->status)));
             if (in_array('priority', $metrics)) $sheet->setCellValue($col++ . $row, ucfirst($c->priority));
-            if (in_array('created', $metrics)) $sheet->setCellValue($col++ . $row, date('Y-m-d', strtotime($c->created_at)));
-            if (in_array('resolved', $metrics)) $sheet->setCellValue($col++ . $row, $c->resolved_at ? date('Y-m-d', strtotime($c->resolved_at)) : '-');
-
+            if (in_array('created', $metrics)) $sheet->setCellValue($col++ . $row, date('d-m-Y', strtotime($c->created_at)));
             $row++;
         }
 
-        // Auto-adjust columns
-        foreach (range('A', 'H') as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
-        }
+        foreach (range('A', $col) as $c) $sheet->getColumnDimension($c)->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Report_' . date('Y-m-d_His') . '.xlsx';
+        $filename = 'Laporan_Pengaduan_' . date('Ymd_His') . '.xlsx';
 
         return $this->response
             ->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
             ->setBody($writer->save('php://output'));
     }
 
-    /**
-     * Generate PDF report
-     */
-    private function generatePdf(array $complaints, array $metrics, array $filters)
+    private function generatePdf($complaints, $metrics, $filters)
     {
         $html = view('admin/reports/export_pdf', [
             'complaints' => $complaints,
-            'metrics' => $metrics,
-            'filters' => $filters,
-            'userModel' => $this->userModel,
-            'appModel' => $this->applicationModel,
-            'catModel' => $this->categoryModel,
+            'metrics'    => $metrics,
+            'filters'    => $filters,
         ]);
 
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
 
-        $filename = 'Report_' . date('Y-m-d_His') . '.pdf';
+        $filename = 'Laporan_Pengaduan_' . date('Ymd_His') . '.pdf';
 
         return $this->response
             ->setHeader('Content-Type', 'application/pdf')
+            // UBAH DARI attachment → inline !
             ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
             ->setBody($dompdf->output());
     }

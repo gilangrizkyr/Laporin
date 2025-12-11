@@ -1,84 +1,148 @@
 <?= $this->extend('layout/admin') ?>
-
 <?= $this->section('content') ?>
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="fas fa-eye"></i> Report Preview</h5>
-        <div>
-            <a href="<?= base_url('admin/reports') ?>" class="btn btn-sm btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back
+
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+            Preview Laporan
+        </h4>
+        <div class="btn-group" role="group">
+
+            <!-- KEMBALI -->
+            <a href="<?= base_url('admin/reports') ?>" class="btn btn-light btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Kembali
             </a>
-            <form method="get" action="<?= base_url('admin/reports/download/' . $format) ?>" style="display:inline;">
-                <button type="submit" class="btn btn-sm btn-primary">
-                    <i class="fas fa-download"></i> Download <?= strtoupper($format) ?>
-                </button>
-            </form>
+
+            <!-- PRINT (pakai PDF) -->
+            <button onclick="printReport()" class="btn btn-warning btn-sm" title="Cetak laporan">
+                <i class="fas fa-print me-1"></i> Print
+            </button>
+
+            <!-- DOWNLOAD PDF -->
+            <a href="<?= base_url('admin/reports/download/pdf') ?>" 
+               class="btn btn-danger btn-sm" 
+               download 
+               title="Download sebagai PDF">
+                <i class="fas fa-file-pdf me-1"></i> PDF
+            </a>
+
+            <!-- DOWNLOAD EXCEL -->
+            <a href="<?= base_url('admin/reports/download/excel') ?>" 
+               class="btn btn-success btn-sm" 
+               title="Download sebagai Excel">
+                <i class="fas fa-file-excel me-1"></i> Excel
+            </a>
+
         </div>
     </div>
+
     <div class="card-body">
-        <h6 class="mb-3">Applied Filters:</h6>
-        <div class="row mb-3">
-            <?php foreach ($filters as $key => $value): ?>
-                <?php if (!empty($value)): ?>
-                    <div class="col-md-3">
-                        <span class="badge bg-info">
-                            <?= ucfirst(str_replace('_', ' ', $key)) ?> = <?= esc($value) ?>
-                        </span>
-                    </div>
-                <?php endif; ?>
-            <?php endforeach; ?>
+
+        <!-- Filter Aktif -->
+        <?php if (!empty($filters)): ?>
+        <div class="alert alert-info mb-4 d-flex align-items-center">
+            <i class="fas fa-filter me-2"></i>
+            <strong>Filter aktif:</strong>
+            <?php foreach ($filters as $k => $v): if($v): ?>
+                <span class="badge bg-primary ms-2">
+                    <?= ucwords(str_replace(['_id','_'], ' ', $k)) ?>: 
+                    <?= is_numeric($v) 
+                        ? ($k=='application_id' 
+                            ? ($this->applicationModel->find($v)->name ?? '-') 
+                            : ($k=='assigned_to' 
+                                ? ($this->userModel->find($v)->full_name ?? '-') 
+                                : $v)) 
+                        : $v 
+                    ?>
+                </span>
+            <?php endif; endforeach; ?>
         </div>
+        <?php endif; ?>
 
-        <h6 class="mb-3">Metrik yang Dipilih: <?= implode(', ', $metrics) ?></h6>
-
+        <!-- Tabel Preview -->
         <div class="table-responsive">
-            <table class="table table-striped table-sm">
+            <table class="table table-bordered table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>#</th>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>User</th>
-                        <?php if (in_array('application', $metrics)): ?><th>App</th><?php endif; ?>
-                        <?php if (in_array('status', $metrics)): ?><th>Status</th><?php endif; ?>
-                        <?php if (in_array('priority', $metrics)): ?><th>Priority</th><?php endif; ?>
-                        <?php if (in_array('created', $metrics)): ?><th>Created</th><?php endif; ?>
+                        <th width="5%" class="text-center">No</th>
+                        <th>Judul Pengaduan</th>
+                        <th>Pengadu</th>
+                        <?php if(in_array('application',$metrics)): ?><th>Aplikasi</th><?php endif; ?>
+                        <?php if(in_array('category',$metrics)): ?><th>Kategori</th><?php endif; ?>
+                        <?php if(in_array('status',$metrics)): ?><th>Status</th><?php endif; ?>
+                        <?php if(in_array('priority',$metrics)): ?><th>Prioritas</th><?php endif; ?>
+                        <?php if(in_array('created',$metrics)): ?><th>Tanggal Dibuat</th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (empty($complaints)): ?>
+                    <?php if(empty($complaints)): ?>
                         <tr>
-                            <td colspan="10" class="text-center text-muted">No data matching the selected filters</td>
+                            <td colspan="10" class="text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3"></i><br>
+                                Tidak ada data yang sesuai filter
+                            </td>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach ($complaints as $i => $c): ?>
-                            <tr>
-                                <td><?= $i + 1 ?></td>
-                                <td><?= $c->id ?></td>
-                                <td><?= esc($c->title) ?></td>
-                                <td><?= $c->user_id ?></td>
-                                <?php if (in_array('application', $metrics)): ?><td><?= $c->application_id ?></td><?php endif; ?>
-                                <?php if (in_array('status', $metrics)): ?>
-                                    <td><span class="badge bg-<?= $c->status == 'pending' ? 'warning' : ($c->status == 'resolved' ? 'success' : 'secondary') ?>">
-                                            <?= ucfirst(str_replace('_', ' ', $c->status)) ?>
-                                        </span></td>
-                                <?php endif; ?>
-                                <?php if (in_array('priority', $metrics)): ?>
-                                    <td><?= ucfirst($c->priority) ?></td>
-                                <?php endif; ?>
-                                <?php if (in_array('created', $metrics)): ?>
-                                    <td><?= date('Y-m-d', strtotime($c->created_at)) ?></td>
-                                <?php endif; ?>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                    <?php else: foreach($complaints as $i => $c): ?>
+                        <tr>
+                            <td class="text-center fw-bold"><?= $i + 1 ?></td>
+                            <td><?= esc($c->title) ?></td>
+                            <td><strong><?= esc($c->user_full_name ?? 'Unknown') ?></strong></td>
+                            <?php if(in_array('application',$metrics)): ?>
+                                <td><?= esc($c->application_name ?? '-') ?></td>
+                            <?php endif; ?>
+                            <?php if(in_array('category',$metrics)): ?>
+                                <td><?= esc($c->category_name ?? '-') ?></td>
+                            <?php endif; ?>
+                            <?php if(in_array('status',$metrics)): ?>
+                                <td class="text-center">
+                                    <span class="badge bg-<?= $c->status=='pending'?'warning':($c->status=='resolved'?'success':'secondary') ?>">
+                                        <?= ucfirst(str_replace('_',' ',$c->status)) ?>
+                                    </span>
+                                </td>
+                            <?php endif; ?>
+                            <?php if(in_array('priority',$metrics)): ?>
+                                <td class="text-center">
+                                    <span class="badge bg-<?= $c->priority=='urgent'?'danger':($c->priority=='important'?'warning':'info') ?>">
+                                        <?= ucfirst($c->priority) ?>
+                                    </span>
+                                </td>
+                            <?php endif; ?>
+                            <?php if(in_array('created',$metrics)): ?>
+                                <td class="text-center"><?= date('d M Y', strtotime($c->created_at)) ?></td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; endif; ?>
                 </tbody>
             </table>
         </div>
 
-        <div class="alert alert-info mt-3">
-            <i class="fas fa-info-circle"></i> Total records: <strong><?= count($complaints) ?></strong>
+        <!-- Total Data -->
+        <div class="alert alert-success d-flex align-items-center">
+            <i class="fas fa-database me-2"></i>
+            <strong>Total: <?= count($complaints) ?> pengaduan</strong>
         </div>
     </div>
 </div>
+
+<!-- IFRAME untuk Print PDF -->
+<iframe id="printFrame" style="height:0; width:0; border:0;"></iframe>
+
+<script>
+function printReport() {
+    const iframe = document.getElementById('printFrame');
+    const pdfUrl = '<?= base_url('admin/reports/download/pdf') ?>';
+
+    iframe.src = pdfUrl + '?t=' + new Date().getTime();
+
+    iframe.onload = function() {
+        try {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        } catch (e) {
+            alert('PDF berhasil dimuat. Silakan klik tombol Print di jendela PDF.');
+        }
+    };
+}
+</script>
+
 <?= $this->endSection() ?>
