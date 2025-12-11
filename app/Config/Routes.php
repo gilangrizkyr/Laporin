@@ -156,8 +156,8 @@ $routes->group('superadmin', [
     $routes->post('users/store', 'UserManagementController::store', ['as' => 'superadmin.users.store']);
     $routes->get('users/(:num)/edit', 'UserManagementController::edit/$1', ['as' => 'superadmin.users.edit']);
     $routes->post('users/(:num)/update', 'UserManagementController::update/$1', ['as' => 'superadmin.users.update']);
-    // $routes->delete('users/(:num)', 'UserManagementController::delete/$1', ['as' => 'superadmin.users.delete']);
-    $routes->post('users/(:num)/delete', 'UserManagementController::delete/$1', ['as' => 'superadmin.users.delete']);
+    $routes->delete('users/(:num)', 'UserManagementController::delete/$1', ['as' => 'superadmin.users.delete']);
+    // $routes->post('users/(:num)/delete', 'UserManagementController::delete/$1', ['as' => 'superadmin.users.delete']);
 
     // TOGGEL AKTIF / NONAKTIFKAN USER → INI YANG WAJIB ADA & SUDAH BENAR!
     $routes->post('users/toggle/(:num)', 'UserManagementController::toggleActive/$1', ['as' => 'superadmin.users.toggle']);
