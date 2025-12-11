@@ -102,9 +102,9 @@
             <!-- LOGO + TULISAN DI SEBELAHNYA -->
             <a class="navbar-brand d-flex align-items-center" href="<?= base_url('/') ?>">
                 <!-- LOGO -->
-                <!-- <img src="<?= base_url('img/beraksi2.png') ?>" -->
-                    <!-- alt="Logo Laporin" -->
-                    <!-- style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;"> -->
+                <img src="<?= base_url('img/beraksi2.png') ?>"
+                    alt="Logo Laporin"
+                    style="height: 40px; width: auto; margin-right: 12px; border-radius: 8px;">
                 <span style="font-weight: 700; font-size: 1.4rem; color: #1e40af;">
                     Laporin
                 </span>
