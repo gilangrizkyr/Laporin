@@ -1,36 +1,29 @@
 # Disable directory browsing
 Options -Indexes
 
-# ----------------------------------------------------------------------
-# Rewrite engine
-# ----------------------------------------------------------------------
-
-# Turning on the rewrite engine is necessary for the following rules and features.
-# FollowSymLinks must be enabled for this to work.
 <IfModule mod_rewrite.c>
     Options +FollowSymlinks
     RewriteEngine On
-    RewriteBase /Laporin/
+    RewriteBase /
 
+    # Remove trailing slash if it's not a folder
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Route all requests to index.php if not a real file or folder
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
 
+    # Pass Authorization header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
 
-
 <IfModule !mod_rewrite.c>
-	# If we don't have mod_rewrite installed, all 404's
-	# can be sent to index.php, and everything works as normal.
-	ErrorDocument 404 index.php
+    ErrorDocument 404 index.php
 </IfModule>
 
-# Disable server signature start
+# Disable server signature
 ServerSignature Off
-# Disable server signature end
