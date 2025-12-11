@@ -53,6 +53,17 @@ class ComplaintModel extends Model
                     ->orderBy('complaints.created_at', 'DESC')
                     ->findAll($limit);
     }
+
+    public function getComplaintsByUser(int $userId, ?string $status = null): array
+{
+    $builder = $this->where('user_id', $userId);
+    
+    if ($status !== null) {
+        $builder->where('status', $status);
+    }
+    
+    return $builder->orderBy('created_at', 'DESC')->findAll();
+}
  /** sini */
     // METHOD BARU: INI YANG BIKIN REPORT CANTIK!
     public function getFilteredComplaintsWithRelations(?array $filters = null): array
