@@ -1,11 +1,3 @@
-# Force HTTPS
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    # Jika belum menggunakan HTTPS, arahkan ke HTTPS
-    RewriteCond %{HTTPS} off
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
-
 # Disable directory browsing
 Options -Indexes
 
@@ -16,17 +8,17 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     Options +FollowSymlinks
     RewriteEngine On
-    RewriteBase /DataInvest/
+    RewriteBase /Laporin/
 
     # Pengecualian untuk file statis seperti gambar, CSS, dan JS
     RewriteCond %{REQUEST_URI} !^/Laporin/(assets|uploads|img|css|js)/
 
-    # Menghapus trailing slash pada URL
+    # Menghapus trailing slash
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Jika file atau direktori tidak ditemukan, arahkan ke index.php
+    # Mengarahkan ke index.php untuk rute yang tidak ditemukan
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
@@ -36,25 +28,10 @@ Options -Indexes
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
 
-# Jika mod_rewrite tidak tersedia, arahkan semua 404 ke index.php
 <IfModule !mod_rewrite.c>
+    # Jika mod_rewrite tidak tersedia, semua 404 akan diarahkan ke index.php
     ErrorDocument 404 index.php
 </IfModule>
 
-# Menonaktifkan server signature untuk alasan keamanan
+# Disable server signature
 ServerSignature Off
-
-# Pengecualian untuk menangani file atau URL tertentu agar tidak diubah
-<IfModule mod_rewrite.c>
-    RewriteCond %{REQUEST_URI} !^/DataInvest/(assets|uploads|img|css|js|favicon.ico)
-</IfModule>
-
-# ------------------------------------------------------
-# Mengarahkan ke login jika tidak terautentikasi
-# ------------------------------------------------------
-
-<IfModule mod_rewrite.c>
-    # Misalnya Anda ingin setiap akses ke `/DataInvest/` langsung ke login
-    RewriteCond %{REQUEST_URI} ^/DataInvest/?$
-    RewriteRule ^ /auth/login [L,R=301]
-</IfModule>
