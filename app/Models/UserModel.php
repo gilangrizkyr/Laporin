@@ -66,7 +66,7 @@ class UserModel extends Model
         return $data;
     }
 
-    public function delete($id = null)
+   public function delete($id = null, bool $purge = false)
 {
     log_message('info', "Attempting to delete user with ID: $id");
 
@@ -84,7 +84,7 @@ class UserModel extends Model
     }
 
     // Melakukan penghapusan
-    $result = parent::delete($id);
+    $result = parent::delete($id, $purge);  // Menyesuaikan dengan parent class method
     if ($result) {
         log_message('info', "User with ID $id deleted successfully.");
     } else {
@@ -93,6 +93,7 @@ class UserModel extends Model
 
     return $result;
 }
+
 
 
     // ========== CUSTOM QUERY METHODS ==========
