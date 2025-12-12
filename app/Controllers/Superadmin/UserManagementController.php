@@ -101,9 +101,15 @@ class UserManagementController extends BaseController
     //     return redirect()->back()->with('error', 'Failed to delete user');
     // }
 
-    public function delete($id)
+   public function delete($id)
 {
     log_message('info', "Trying to delete user with ID: $id");
+
+    // Memastikan bahwa ID yang diterima valid
+    if (!$id) {
+        log_message('error', "Invalid ID received.");
+        return redirect()->to(base_url('superadmin/users'))->with('error', 'User ID is invalid');
+    }
 
     if ($this->userModel->delete($id)) {
         log_message('info', "User with ID $id deleted successfully.");
@@ -113,7 +119,6 @@ class UserManagementController extends BaseController
     log_message('error', "Failed to delete user with ID: $id");
     return redirect()->back()->with('error', 'Failed to delete user');
 }
-
 
     public function toggleActive($id)
     {
