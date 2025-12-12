@@ -90,36 +90,16 @@ class UserManagementController extends BaseController
         return redirect()->to(base_url('superadmin/users'))->with('success', 'User updated');
     }
 
+    public function delete($id)
+    {
+        if ($this->userModel->delete($id)) {
+            return redirect()->to(base_url('superadmin/users'))->with('success', 'User deleted');
+        }
 
-
-    // public function delete($id)
-    // {
-    //     if ($this->userModel->delete($id)) {
-    //         return redirect()->to(base_url('superadmin/users'))->with('success', 'User deleted');
-    //     }
-
-    //     return redirect()->back()->with('error', 'Failed to delete user');
-    // }
-
-   public function delete($id)
-{
-    log_message('info', "Trying to delete user with ID: $id");
-
-    // Memastikan bahwa ID yang diterima valid
-    if (!$id) {
-        log_message('error', "Invalid ID received.");
-        return redirect()->to(base_url('superadmin/users'))->with('error', 'User ID is invalid');
+        return redirect()->back()->with('error', 'Failed to delete user');
     }
 
-    if ($this->userModel->delete($id)) {
-        log_message('info', "User with ID $id deleted successfully.");
-        return redirect()->to(base_url('superadmin/users'))->with('success', 'User deleted');
-    }
-
-    log_message('error', "Failed to delete user with ID: $id");
-    return redirect()->back()->with('error', 'Failed to delete user');
-}
-
+  
     public function toggleActive($id)
     {
         if ($this->userModel->toggleActive($id)) {
