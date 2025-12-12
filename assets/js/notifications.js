@@ -1,7 +1,8 @@
 const Notifications = {
     // Get base URL
-   getBaseUrl: function() {
-    return window.location.origin + '/';
+  getBaseUrl: function() {
+    // Mengganti http:// menjadi https:// jika URL origin menggunakan http://
+    return window.location.origin.replace('http://', 'https://') + '/';
 },
 
 
