@@ -66,36 +66,7 @@ class UserModel extends Model
         return $data;
     }
 
-   public function delete($id = null, bool $purge = false)
-{
-    log_message('info', "Attempting to delete user with ID: $id");
-
-    // Pastikan ID ada dan valid
-    if ($id === null) {
-        log_message('error', "User ID is null.");
-        return false;
-    }
-
-    // Pastikan user ada di database
-    $user = $this->find($id);
-    if (!$user) {
-        log_message('error', "User with ID $id not found.");
-        return false;
-    }
-
-    // Melakukan penghapusan
-    $result = parent::delete($id, $purge);  // Menyesuaikan dengan parent class method
-    if ($result) {
-        log_message('info', "User with ID $id deleted successfully.");
-    } else {
-        log_message('error', "Failed to delete user with ID: $id.");
-    }
-
-    return $result;
-}
-
-
-
+  
     // ========== CUSTOM QUERY METHODS ==========
 
     public function getUserByEmail(string $email): ?User
