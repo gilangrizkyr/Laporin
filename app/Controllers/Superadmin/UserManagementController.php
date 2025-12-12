@@ -92,14 +92,28 @@ class UserManagementController extends BaseController
 
 
 
-    public function delete($id)
-    {
-        if ($this->userModel->delete($id)) {
-            return redirect()->to(base_url('superadmin/users'))->with('success', 'User deleted');
-        }
+    // public function delete($id)
+    // {
+    //     if ($this->userModel->delete($id)) {
+    //         return redirect()->to(base_url('superadmin/users'))->with('success', 'User deleted');
+    //     }
 
-        return redirect()->back()->with('error', 'Failed to delete user');
+    //     return redirect()->back()->with('error', 'Failed to delete user');
+    // }
+
+    public function delete($id)
+{
+    log_message('info', "Trying to delete user with ID: $id");
+
+    if ($this->userModel->delete($id)) {
+        log_message('info', "User with ID $id deleted successfully.");
+        return redirect()->to(base_url('superadmin/users'))->with('success', 'User deleted');
     }
+
+    log_message('error', "Failed to delete user with ID: $id");
+    return redirect()->back()->with('error', 'Failed to delete user');
+}
+
 
     public function toggleActive($id)
     {
